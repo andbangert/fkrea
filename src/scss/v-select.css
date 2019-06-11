@@ -1,0 +1,46 @@
+.v-select .dropdown-toggle .clear {
+    min-width: 23px !important;
+}
+
+.v-select .selected-tag .close {
+    min-width     : 12px !important;
+    padding-bottom: 2px;
+    padding-top   : 2px;
+}
+
+.v-select.selected-tag.close>span{
+    width: 16px;
+    min-height: 16px;
+    
+    /* Темно серый */
+    color: #6D6D6D !important; 
+}
+
+.v-select .selected-tag {
+    /* Светло серый */
+    background: #D6D6D6 !important;
+    /* Темно серый */
+    border       : 1px solid #6D6D6D !important;
+    box-sizing   : border-box;
+    border-radius: 4px !important;
+    min-height       : 28px !important;
+
+    font-style : normal;
+    font-weight: normal;
+    font-size  : 14px !important;
+    line-height: normal;
+}
+
+.dropdown .v-select {
+    background: #FFFFFF;
+    /* Светло серый */
+    border       : 1px solid #D6D6D6;
+    box-sizing   : border-box;
+    border-radius: 4px !important;
+    min-height       : 28px !important;
+
+    font-style : normal;
+    font-weight: normal;
+    font-size  : 14px;
+    line-height: normal;
+}

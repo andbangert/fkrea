@@ -1,0 +1,111 @@
+
+.ms-formtitle>tbody>tr>td {
+    padding-top: 0px;
+    padding-bottom: 20px;
+}
+.form-title {
+    width : 372px;
+    height: 28px;
+    left  : 353px;
+    top   : 139px;
+
+    font-style : normal;
+    font-weight: 300;
+    font-size  : 36px;
+    line-height: normal;
+
+    color: #2086BF;
+}
+
+table.ms-formtable>tbody>tr>td.ms-formbody {
+    width: 528px !important;
+}
+
+.ms-formbody .ms-long {
+    left      : 0%;
+    right     : 0%;
+    top       : 0%;
+    bottom    : 0%;
+    background: #FFFFFF;
+    /* Светло серый */
+    border       : 1px solid #D6D6D6;
+    box-sizing   : border-box;
+    border-radius: 4px;
+    /* INPUT */
+    min-width : 528px;
+    width: 100%;
+    height: 28px;
+
+    font-style : normal;
+    font-weight: normal;
+    font-size  : 14px;
+    line-height: normal;
+
+    color: #313131;
+}
+
+.ms-formlabel {
+    width : 171px;
+    height: 28px;
+
+    font-style : normal;
+    font-weight: normal;
+    font-size  : 16px;
+    line-height: normal;
+
+    color: #6D6D6D;
+}
+
+td.ms-formlabel.add-field-label>h3>nobr {
+    width : 151px;
+    height: 28px;
+
+    font-style : italic !important;
+    font-weight: normal;
+    font-size  : 14px;
+    line-height: normal;
+
+    color: #6D6D6D;
+}
+
+#btnSave {
+    width : 161px;
+    height: 36px;
+
+    /* Main blue */
+    background   : #2086BF;
+    border-radius: 4px;
+    color        : #FFFFFF;
+
+    font-style : normal;
+    font-weight: bold;
+    font-size  : 14px;
+    line-height: normal;
+    text-align : center;
+}
+
+#btnCancel {
+    width : 161px;
+    height: 36px;
+
+    background: #FFFFFF;
+    /* Main blue */
+    border       : 2px solid #2086BF;
+    box-sizing   : border-box;
+    border-radius: 4px;
+    color        : #2086BF;
+
+    font-style : normal;
+    font-weight: bold;
+    font-size  : 14px;
+    line-height: normal;
+    text-align : center;
+}
+
+.add-field-label{
+    font-style: italic;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: normal;
+    color: #6D6D6D;
+}
