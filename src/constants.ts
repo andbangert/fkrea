@@ -32,7 +32,7 @@ export namespace Fkrea {
         export const FieldContentTypeId: string = 'ContentTypeId';
         export const FieldBuilder: string = 'Builder';
         export const FieldExternalId: string = 'externalID';
-        export const FieldUOPD_ID: string = 'UOPD_ID';
+        export const FieldUOPDID: string = 'UOPD_ID';
         export const FieldContractor: string = 'Contractor';
         export const FieldDesignerContracts: string = 'DesignerContracts';
         export const FieldContracts: string = 'Contracts';

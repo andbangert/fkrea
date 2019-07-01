@@ -1,8 +1,8 @@
-
 .ms-formtitle>tbody>tr>td {
-    padding-top: 0px;
+    padding-top   : 0px;
     padding-bottom: 20px;
 }
+
 .form-title {
     width : 372px;
     height: 28px;
@@ -32,9 +32,9 @@ table.ms-formtable>tbody>tr>td.ms-formbody {
     box-sizing   : border-box;
     border-radius: 4px;
     /* INPUT */
-    min-width : 528px;
-    width: 100%;
-    height: 28px;
+    min-width: 528px;
+    width    : 100%;
+    height   : 28px;
 
     font-style : normal;
     font-weight: normal;
@@ -102,10 +102,265 @@ td.ms-formlabel.add-field-label>h3>nobr {
     text-align : center;
 }
 
-.add-field-label{
-    font-style: italic;
+.add-field-label {
+    font-style : italic;
     font-weight: normal;
-    font-size: 14px;
+    font-size  : 14px;
     line-height: normal;
+    color      : #6D6D6D;
+}
+
+
+/*  */
+
+/* body {
+    background: #F2F2F2;
+} */
+
+.fkr-container {
+    /* FieldName */
+    font-family: Arial;
+    font-style: normal;
+    font-weight: normal;
+    background:#F2F2F2;
+}
+
+button {
+    /*font-family: Arial;
+    font-style: normal;
+    font-weight: normal;*/
+    font-size: 14px;
+    line-height: 16px;
+    align-items: center;
+    text-align: center;
+    /* Main blue */
+    color: #2086BF;
+    border-radius: 4px;
+    background: #ffffff;
+    padding: 5px 24px;
+    box-shadow: none;
+}
+
+    button.fkr-invert-btn {
+        background: #2086BF;
+        color: #ffffff;
+    }
+
+.fkr-page-title {
+    /* Window title */
+    /*font-family: Arial;
+    font-style: normal;*/
+    font-weight: 300;
+    font-size: 36px;
+    line-height: 42px;
+    display: flex;
+    align-items: center;
+}
+
+.fkr-title {
+    /*font-family: Arial;
+    font-style: normal;*/
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 28px;
+    display: flex;
+    align-items: center;
+    /* Main blue */
+}
+
+.fkr-color-blue {
+    color: #2086BF;
+}
+
+.fkr-color-gray {
     color: #6D6D6D;
 }
+
+.fkr-color-red {
+    color: #FF0000;
+}
+
+
+.fkr-text {
+    /* FieldName */
+    /*font-family: Arial;
+    font-style: normal;*/
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 21px;
+}
+
+.fkr-bold-text {
+    /* FieldName */
+    font-weight: 600;
+}
+
+.fkr-add-text {
+    /*font-family: Arial;*/
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+ul.fkr-menu-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+    ul.fkr-menu-links li {
+        float: left;
+    }
+
+        ul.fkr-menu-links li a {
+            display: block;
+            text-align: center;
+            padding: 16px;
+            text-decoration: none;
+        }
+
+.fkr-doc-table {
+    width: 100%;
+}
+
+    .fkr-doc-table th, .fkr-doc-table td {
+        text-align: left;
+    }
+
+
+
+
+.fkr-content-table {
+    background: #FFFFFF;
+    border: 1px solid #DFE3E6;
+    box-sizing: border-box;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+    .fkr-content-table td {
+    }
+
+    .fkr-content-table td {
+        border-bottom: 1px solid #DFE3E6;
+    }
+
+        .fkr-content-table td.fkr-content-title {
+            font-weight: 300;
+        }
+
+    .fkr-content-table tr.fkr-content-row td {
+        /*font-family: Arial;
+        font-style: normal;
+        font-weight: normal;*/
+        font-size: 14px;
+        line-height: 16px;
+    }
+
+.fkr-header-row .fkr-header-title {
+    padding-left: 26px;
+    padding-right: 26px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.fkr-header-row td {
+}
+
+.fkr-content-row td {
+    vertical-align: top;
+}
+
+.fkr-content-row .fkr-content-title {
+    padding-left: 26px;
+    padding-right: 26px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.fkr-footer-row .fkr-footer-content {
+    padding-left: 26px;
+    padding-right: 26px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+input {
+    border: 1px solid #2086BF;
+    box-sizing: border-box;
+    border-radius: 4px;
+    height: 24px;
+}
+
+.db-container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1400px;
+}
+
+.db-row {
+    display: -ms-flexbox;
+    display: flex;
+    /*-ms-flex-wrap: wrap;
+    flex-wrap: wrap;*/
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+
+/*  */
+/* .db-col-1, .db-col-2, .db-col-3, .db-col-4, .db-col-5, .db-col-6, .db-col-7, .db-col-8, .db-col-9, .db-col-10, .db-col-11, .db-col-12 {
+    padding: 8px 8px 8px 8px
+}
+
+.db-col-1 {
+    width: 8.33%
+}
+
+.db-col-2 {
+    width: 16.66%
+}
+
+.db-col-3 {
+    width: 24.99%
+}
+
+.db-col-4 {
+    width: 33.32%
+}
+
+.db-col-5 {
+    width: 41.65%
+}
+
+.db-col-6 {
+    width: 49.98%
+}
+
+.db-col-7 {
+    width: 58.31%
+}
+
+.db-col-8 {
+    width: 66.64%
+}
+
+.db-col-9 {
+    width: 74.97%
+}
+
+.db-col-10 {
+    width: 83.3%
+}
+
+.db-col-11 {
+    width: 91.63%
+}
+
+.db-col-12 {
+    width: 99.96%
+} */

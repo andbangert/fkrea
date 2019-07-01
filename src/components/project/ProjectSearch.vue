@@ -36,7 +36,6 @@ import * as constants from "../../constants";
 import proj = constants.Fkrea.Fields;
 import { ProjectFormHelper, ProjectResult } from "../../projectFormHelper";
 import * as utils from "@/utilities";
-import fkr = utils.Fkrea;
 
 Vue.component("v-select", vSelect);
 @Component({
@@ -110,7 +109,7 @@ export default class ProjectSearch extends Vue {
   ) {
     let values: SelectLookupValue[] = new Array<SelectLookupValue>();
     try {
-      const objr = await utils.Fkrea.SearchListObject(queryText, listId, 100, [
+      const objr = await utils.SearchListObject(queryText, listId, 100, [
         "ListItemID",
         "Title"
       ]);

@@ -6,7 +6,7 @@ import * as utils from '@/utilities';
 import * as constants from '@/constants';
 
 import proj = constants.Fkrea.Fields;
-import fkr = utils.Fkrea;
+
 import {
     SelectLookupValue,
     FormField,
@@ -27,10 +27,6 @@ export interface ProjectResult {
 export class ProjectFormHelper {
     public fields: FormField[];
     public settings: ProjectCardSettings;
-    constructor(fields: FormField[], projectCardSettings: ProjectCardSettings) {
-        this.fields = fields;
-        this.settings = projectCardSettings;
-    }
 
     public static async getProjectsByBuildObject(siteUrl: string, projectListId: string, buildObjectId: number) {
         const query = new CamlBuilder().View().RowLimit(100).Query()
@@ -40,7 +36,7 @@ export class ProjectFormHelper {
             .NumberField('ID')
             .EqualTo(Number(buildObjectId))
             .ToString();
-        const projectsResult = await fkr.getItemsByQuery(siteUrl, projectListId, query);
+        const projectsResult = await utils.getItemsByQuery(siteUrl, projectListId, query);
         const items: ProjectItem[] = new Array<ProjectItem>();
 
         projectsResult.data.forEach((item) => {
@@ -72,6 +68,11 @@ export class ProjectFormHelper {
             }
         });
         return items;
+    }
+
+    constructor(fields: FormField[], projectCardSettings: ProjectCardSettings) {
+        this.fields = fields;
+        this.settings = projectCardSettings;
     }
 
     public getTrimmedText(value: string) {
@@ -116,7 +117,7 @@ export class ProjectFormHelper {
         try {
             if (path) {
                 const folder =
-                    await utils.Fkrea.
+                    await utils.
                         checkIfFolderExists(
                             siteUrl,
                             scanLibId,
@@ -134,7 +135,7 @@ export class ProjectFormHelper {
                     if (path) {
                         try {
                             // create on not exists
-                            const folder = await utils.Fkrea.
+                            const folder = await utils.
                                 createFolderRecursively(
                                     siteUrl,
                                     scanLibId,
@@ -240,7 +241,7 @@ export class ProjectFormHelper {
     ) {
         let values: SelectLookupValue[] = new Array<SelectLookupValue>();
         try {
-            const objr = await utils.Fkrea.SearchListObject(
+            const objr = await utils.SearchListObject(
                 queryText,
                 listId,
                 100,
@@ -279,9 +280,9 @@ export class ProjectFormHelper {
         let boId = -1; // UOPD_ID
         try {
             // Get build object from main site by UOPD_ID
-            const resultBo = await fkr.getItemsByQuery(
+            const resultBo = await utils.getItemsByQuery(
                 this.settings.siteUrl,
-                this.settings.BuildingsListId,
+                this.settings.buildingsListId,
                 this.getBoByUOPDQuery(val.externalID));
             if (resultBo.data && resultBo.data.length !== 0) {
                 boId = resultBo.data[0].get_item('UNOM');
@@ -290,7 +291,7 @@ export class ProjectFormHelper {
             }
 
             // Get Documents from main site which field "BuildingAddress" contains bo id...
-            const resultDocs = await fkr.getItemsByQuery(
+            const resultDocs = await utils.getItemsByQuery(
                 this.settings.siteUrl,
                 this.settings.docListId,
                 this.docsByBoIDQuery(boId));
@@ -322,12 +323,12 @@ export class ProjectFormHelper {
 
             // Get All Builders from main site...
             const buildUnoIds = new Array<string>();
-            const buildersResult = await fkr.getItemsByQuery(this.settings.siteUrl,
+            const buildersResult = await utils.getItemsByQuery(this.settings.siteUrl,
                 this.settings.contractorListId, this.getAllContractorFromMainSiteQuery(builderIds));
             if (buildersResult.data && buildersResult.data.length > 0) {
                 // Fetch all DUOPD_ID to get local designers and contractors
                 buildersResult.data.forEach((bld) => {
-                    buildUnoIds.push(bld.get_item(proj.FieldUOPD_ID) as string);
+                    buildUnoIds.push(bld.get_item(proj.FieldUOPDID) as string);
                 });
             }
 
@@ -342,7 +343,7 @@ export class ProjectFormHelper {
             }
 
             const result: ProjectResult = {
-                contracts: contracts,
+                contracts,
                 builders: contractors,
             };
             return result;
@@ -353,7 +354,7 @@ export class ProjectFormHelper {
 
     private async getContractors(listId: string, ids: string[]) {
         try {
-            const result = await fkr.getItemsByQuery(
+            const result = await utils.getItemsByQuery(
                 _spPageContextInfo.webServerRelativeUrl,
                 listId,
                 this.getDesignerQuery(ids));
@@ -436,7 +437,7 @@ export class ProjectFormHelper {
         //     '</ProjectedFields>' +
         //     '<RowLimit Paged="TRUE">1000</RowLimit></View>';
 
-            const query = `
+        const query = `
             <View Scope="RecursiveAll">
   <Query>
     <Where>

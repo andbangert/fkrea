@@ -1,12 +1,9 @@
 import {
     SPClientRequestError,
-    FormFieldLookup,
-    FormField,
-    FormFieldText,
     SelectOptions,
     SelectLookupValue,
     ProjectCardSettings,
-} from './types';
+} from './types/index';
 
 import CamlBuilder from 'camljs';
 import * as utils from './utilities';
@@ -14,160 +11,10 @@ import * as constants from './constants';
 import { ProjectFormHelper, ProjectResult } from '@/projectFormHelper';
 
 import proj = constants.Fkrea.Fields;
-import fkr = utils.Fkrea;
+import { FormFieldText, FormFieldLookup, FormField } from './types/index';
 
 
 export class ProjectFieldInitializer {
-
-    public static async InitializeFields(payload: {
-        siteUrl: string,
-        listId: string,
-        itemId: number,
-    }, fieldsToRender: string[]) {
-        return new Promise<FormField[]>((resolve, reject) => {
-            const fieldsMetadata = new Array<FormField>();
-            const ctx = new SP.ClientContext(payload.siteUrl);
-            const list = ctx.get_web().get_lists().getById(payload.listId);
-            const fields = new Array<SP.Field>();//list.get_fields();
-            let item = null;
-            if (payload.itemId > 0) {
-                item = list.getItemById(payload.itemId);
-                ctx.load(item);
-            }
-            ctx.load(list);
-            fieldsToRender.forEach((name) => {
-                const fldCtx = list.get_fields().getByInternalNameOrTitle(name);
-                ctx.load(fldCtx);
-                fields.push(fldCtx);
-            });
-            ctx.executeQueryAsync((s, a) => {
-                fieldsToRender.forEach((name) => {
-                    const fld = fields.find(f => f.get_internalName() === name);
-                    if (!fld) {
-                        return;
-                    }
-                    const fieldType = fld.get_typeAsString();
-                    if (fieldType === 'Lookup' || fieldType === 'LookupMulti') {
-                        const fldLookup = fld.get_typedObject() as SP.FieldLookup;
-                        if (fldLookup) {
-                            const multi = name === proj.FieldBuildObj ? false : fldLookup.get_allowMultipleValues();
-                            // const multi = fldLookup.get_allowMultipleValues();
-                            fieldsMetadata.push(
-                                new FormFieldLookup(
-                                    fldLookup.get_internalName(),
-                                    fldLookup.get_title(),
-                                    fldLookup.get_lookupList(),
-                                    multi ? [] : undefined,
-                                    multi));
-                        }
-                    } else if ((fieldType === 'TextField' || fieldType === 'Text' || fieldType === 'Note')) {
-                        const fldText = fld as SP.FieldText;
-                        if (name === proj.FieldDesignerContracts || name === proj.FieldContracts) {
-                            fieldsMetadata.push(new FormFieldLookup(
-                                fldText.get_internalName(),
-                                fldText.get_title(),
-                                '',
-                                [],
-                                true));
-                        } else {
-                            fieldsMetadata.push(new FormFieldText(fldText.get_internalName(), fldText.get_title(), undefined));
-                        }
-                    }
-                })
-                resolve(fieldsMetadata);
-            }, (s, a: SP.ClientRequestFailedEventArgs) => {
-                reject(new SPClientRequestError(a));
-            });
-            ctx.dispose();
-        });
-    }
-
-    public static async InitializeFieldOptions(payload: {
-        siteUrl: string,
-        listId: string,
-        itemId: number,
-    }, fields: FormField[], settings: ProjectCardSettings) {
-        const fieldsOptions = new Array<SelectOptions>();
-        let result: ProjectResult | undefined;
-        let item: SP.ListItem | undefined;
-        if (payload.itemId > 0) {
-            item = await utils.Fkrea.getItemById(payload.siteUrl, payload.listId, payload.itemId);
-            if (item) {
-                const helper = new ProjectFormHelper(fields, settings);
-                console.log(item.get_fieldValues());
-                const itemVals = item.get_fieldValues();
-                const boval: SP.FieldLookupValue[] = itemVals[proj.FieldBuildObj] as SP.FieldLookupValue[];
-                if (boval && boval.length > 0) {
-                    const value: SelectLookupValue = {
-                        LookupId: Number(boval[0].get_lookupId()),
-                        LookupValue: boval[0].get_lookupValue(),
-                    };
-                    const boField = fields.find((f) => f.name === proj.FieldBuildObj) as FormFieldLookup;
-                    const boItem = await utils.Fkrea
-                        .getItemById(payload.siteUrl, boField.lookupListId, value.LookupId);
-                    value.externalID = boItem.get_fieldValues()[proj.FieldExternalId] + '';
-                    result = await helper.changeBuildObject(value);
-                }
-            }
-        }
-
-        const tojFld = fields.find((f) => f.name === proj.FieldTypeOfJobs);
-        if (tojFld) {
-            const tojOptions = await ProjectFieldInitializer.getTypeOfJobsOptions(<FormFieldLookup>tojFld);
-            fieldsOptions.push({ fieldName: tojFld.name, options: tojOptions ? tojOptions : [] });
-        }
-        fields.forEach((fld) => {
-            if (fld.name === proj.FieldContracts || fld.name === proj.FieldDesignerContracts) {
-                if (result) {
-                    fieldsOptions.push({
-                        fieldName: fld.name,
-                        options: result.contracts ? result.contracts : [],
-                    });
-                } else {
-                    fieldsOptions.push({
-                        fieldName: fld.name,
-                        options: [],
-                    });
-                }
-                // Set Field Value
-                if (item) {
-                    this.setFieldValue(fld, item, true);
-                }
-            } else if (fld.name === proj.FieldDesigner || fld.name === proj.FieldContractor) {
-                if (result) {
-                    fieldsOptions.push({
-                        fieldName: fld.name,
-                        options: result.builders ? result.builders : [],
-                    });
-                } else {
-                    fieldsOptions.push({
-                        fieldName: fld.name,
-                        options: [],
-                    });
-                }
-                // Set Field Value
-                if (item) {
-                    this.setFieldValue(fld, item, false);
-                }
-            } else if (fld.name === proj.FieldBuildObj) {
-                fieldsOptions.push({
-                    fieldName: fld.name,
-                    options: [],
-                });
-                // Set Field Value
-                if (item) {
-                    this.setFieldValue(fld, item, false);
-                }
-            } else {
-                // Set Field Value
-                if (item) {
-                    this.setFieldValue(fld, item, false);
-                }
-            }
-        });
-        return fieldsOptions;
-    }
-
     private static setFieldValue(field: FormField, item: SP.ListItem, convert: boolean) {
         const value = item.get_item(field.name);
         if (!value || value === '') {
@@ -192,18 +39,18 @@ export class ProjectFieldInitializer {
                 }
             }
         } else if (convert) {
-            try {
-                const lf = field as FormFieldLookup;
-                if (lf) {
-                    if (lf.allowMulti) {
-                        const values = ProjectFieldInitializer.parseMultiLookupValue(value);
-                        lf.value = values.map((v) => {
-                            return { ...v } as SelectLookupValue;
-                        });
-                    }
-                    // TODO: Single lookup;
+            // try {
+            const lf = field as FormFieldLookup;
+            if (lf) {
+                if (lf.allowMulti) {
+                    const values = ProjectFieldInitializer.parseMultiLookupValue(value);
+                    lf.value = values.map((v) => {
+                        return { ...v } as SelectLookupValue;
+                    });
                 }
-            } catch { }
+                // TODO: Single lookup;
+            }
+            // } catch { }
         } else {
             const tf = field as FormFieldText;
             tf.value = value + ''; // As String
@@ -278,6 +125,160 @@ export class ProjectFieldInitializer {
         return resultArray;
     }
 
+    public static async InitializeFields(
+        payload: {
+            siteUrl: string,
+            listId: string,
+            itemId: number,
+        },
+        fieldsToRender: string[]) {
+        return new Promise<FormField[]>((resolve, reject) => {
+            const fieldsMetadata = new Array<FormField>();
+            const ctx = new SP.ClientContext(payload.siteUrl);
+            const list = ctx.get_web().get_lists().getById(payload.listId);
+            const fields = new Array<SP.Field>(); // list.get_fields();
+            let item = null;
+            if (payload.itemId > 0) {
+                item = list.getItemById(payload.itemId);
+                ctx.load(item);
+            }
+            ctx.load(list);
+            fieldsToRender.forEach((name) => {
+                const fldCtx = list.get_fields().getByInternalNameOrTitle(name);
+                ctx.load(fldCtx);
+                fields.push(fldCtx);
+            });
+            ctx.executeQueryAsync((s, a) => {
+                fieldsToRender.forEach((name) => {
+                    const fld = fields.find((f) => f.get_internalName() === name);
+                    if (!fld) {
+                        return;
+                    }
+                    const fieldType = fld.get_typeAsString();
+                    if (fieldType === 'Lookup' || fieldType === 'LookupMulti') {
+                        const fldLookup = fld.get_typedObject() as SP.FieldLookup;
+                        if (fldLookup) {
+                            const multi = name === proj.FieldBuildObj ? false : fldLookup.get_allowMultipleValues();
+                            // const multi = fldLookup.get_allowMultipleValues();
+                            fieldsMetadata.push(
+                                new FormFieldLookup(
+                                    fldLookup.get_internalName(),
+                                    fldLookup.get_title(),
+                                    fldLookup.get_lookupList(),
+                                    multi ? [] : undefined,
+                                    multi));
+                        }
+                    } else if ((fieldType === 'TextField' || fieldType === 'Text' || fieldType === 'Note')) {
+                        const fldText = fld as SP.FieldText;
+                        if (name === proj.FieldDesignerContracts || name === proj.FieldContracts) {
+                            fieldsMetadata.push(new FormFieldLookup(
+                                fldText.get_internalName(),
+                                fldText.get_title(),
+                                '',
+                                [],
+                                true));
+                        } else {
+                            fieldsMetadata.push(
+                                new FormFieldText(fldText.get_internalName(), fldText.get_title(), undefined));
+                        }
+                    }
+                });
+                resolve(fieldsMetadata);
+            }, (s, a: SP.ClientRequestFailedEventArgs) => {
+                reject(new SPClientRequestError(a));
+            });
+            ctx.dispose();
+        });
+    }
+
+    public static async InitializeFieldOptions(payload: {
+        siteUrl: string,
+        listId: string,
+        itemId: number
+    },
+    fields: FormField[],
+    settings: ProjectCardSettings) {
+        const fieldsOptions = new Array<SelectOptions>();
+        let result: ProjectResult | undefined;
+        let item: SP.ListItem | undefined;
+        if (payload.itemId > 0) {
+            item = await utils.getItemById(payload.siteUrl, payload.listId, payload.itemId);
+            if (item) {
+                const helper = new ProjectFormHelper(fields, settings);
+                // console.log(item.get_fieldValues());
+                const itemVals = item.get_fieldValues();
+                const boval: SP.FieldLookupValue[] = itemVals[proj.FieldBuildObj] as SP.FieldLookupValue[];
+                if (boval && boval.length > 0) {
+                    const value: SelectLookupValue = {
+                        LookupId: Number(boval[0].get_lookupId()),
+                        LookupValue: boval[0].get_lookupValue(),
+                    };
+                    const boField = fields.find((f) => f.name === proj.FieldBuildObj) as FormFieldLookup;
+                    const boItem = await utils
+                        .getItemById(payload.siteUrl, boField.lookupListId, value.LookupId);
+                    value.externalID = boItem.get_fieldValues()[proj.FieldExternalId] + '';
+                    result = await helper.changeBuildObject(value);
+                }
+            }
+        }
+
+        const tojFld = fields.find((f) => f.name === proj.FieldTypeOfJobs);
+        if (tojFld) {
+            const tojOptions = await ProjectFieldInitializer.getTypeOfJobsOptions(tojFld as FormFieldLookup);
+            fieldsOptions.push({ fieldName: tojFld.name, options: tojOptions ? tojOptions : [] });
+        }
+        fields.forEach((fld) => {
+            if (fld.name === proj.FieldContracts || fld.name === proj.FieldDesignerContracts) {
+                if (result) {
+                    fieldsOptions.push({
+                        fieldName: fld.name,
+                        options: result.contracts ? result.contracts : [],
+                    });
+                } else {
+                    fieldsOptions.push({
+                        fieldName: fld.name,
+                        options: [],
+                    });
+                }
+                // Set Field Value
+                if (item) {
+                    this.setFieldValue(fld, item, true);
+                }
+            } else if (fld.name === proj.FieldDesigner || fld.name === proj.FieldContractor) {
+                if (result) {
+                    fieldsOptions.push({
+                        fieldName: fld.name,
+                        options: result.builders ? result.builders : [],
+                    });
+                } else {
+                    fieldsOptions.push({
+                        fieldName: fld.name,
+                        options: [],
+                    });
+                }
+                // Set Field Value
+                if (item) {
+                    this.setFieldValue(fld, item, false);
+                }
+            } else if (fld.name === proj.FieldBuildObj) {
+                fieldsOptions.push({
+                    fieldName: fld.name,
+                    options: [],
+                });
+                // Set Field Value
+                if (item) {
+                    this.setFieldValue(fld, item, false);
+                }
+            } else {
+                // Set Field Value
+                if (item) {
+                    this.setFieldValue(fld, item, false);
+                }
+            }
+        });
+        return fieldsOptions;
+    }
+
     public static async getTypeOfJobsOptions(fld: FormFieldLookup) {
         let typeOfJobs = new Array<SelectLookupValue>();
         if (fld) {
@@ -286,7 +287,7 @@ export class ProjectFieldInitializer {
                 .RowLimit(1000)
                 .Query()
                 .OrderBy('ID').ToString();
-            const result = await fkr.getItemsByQuery(
+            const result = await utils.getItemsByQuery(
                 _spPageContextInfo.webServerRelativeUrl,
                 fld.lookupListId, query);
 
