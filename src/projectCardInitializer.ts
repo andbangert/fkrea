@@ -3,16 +3,16 @@ import {
     SelectOptions,
     SelectLookupValue,
     ProjectCardSettings,
-} from './types/index';
-
+    FormFieldText,
+    FormFieldLookup,
+    FormField,
+} from './types';
 import CamlBuilder from 'camljs';
 import * as utils from './utilities';
 import * as constants from './constants';
 import { ProjectFormHelper, ProjectResult } from '@/projectFormHelper';
 
 import proj = constants.Fkrea.Fields;
-import { FormFieldText, FormFieldLookup, FormField } from './types/index';
-
 
 export class ProjectFieldInitializer {
     private static setFieldValue(field: FormField, item: SP.ListItem, convert: boolean) {
@@ -69,7 +69,7 @@ export class ProjectFieldInitializer {
         });
     }
 
-    private static parseMultiLookupValue(valueStr: string): SelectLookupValue[] {
+    public static parseMultiLookupValue(valueStr: string): SelectLookupValue[] {
         if (valueStr === null || valueStr === '') {
             return [];
         }

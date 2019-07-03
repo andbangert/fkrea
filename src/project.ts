@@ -12,8 +12,9 @@ import {
     ProjectCardSettings,
     SelectLookupValue,
     SPClientRequestError,
-    FieldValidationResult,
 } from './types';
+
+import { FieldValidationResult } from '@/types/FieldValidationResult';
 
 import proj = constants.Fkrea.Fields;
 
@@ -70,7 +71,7 @@ export class ProjectForm {
         }
         const buildObjElementId = `${fldCtx.Name}_${fldCtx.Id}_$${fldCtx.FieldType}Field_fld`;
         const fieldBoOpts: VueSelectOptions = {
-            onSearch: async function(queryText: string, loading: (val: boolean) => void) {
+            onSearch: async function (queryText: string, loading: (val: boolean) => void) {
                 if (!queryText || queryText.length < 3) {
                     this.options = [];
                     return;

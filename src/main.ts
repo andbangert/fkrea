@@ -1,15 +1,25 @@
 import Vue from 'vue';
 import { ProjectCardSettings, ProjectMainSettings } from './types';
+import { ProjectFieldInitializer } from '@/projectCardInitializer';
 import ProjectForm from './components/project/ProjectForm.vue';
 import ProjectSearch from './components/project/ProjectSearch.vue';
 import ProjectExcecutiveDocsForm from './components/project/ProjectExcecutiveDocsForm.vue';
-import { ProjectFieldInitializer } from '@/projectCardInitializer';
+import actions from '@/store/action-types';
+import store from './store/store';
+
 import '@/scss/v-select.css';
 import '@/scss/form.css';
 
 Vue.config.productionTip = false;
 
-export function InitializeProjectExecutiveDocs(settings: ProjectMainSettings, cardSettings: ProjectCardSettings) {
+// export async function InitializeProjectExecutiveDocs(settings: ProjectMainSettings, cardSettings: ProjectCardSettings) {
+export async function InitializeProjectExecutiveDocs() {
+  await store.dispatch(actions.LOAD_PROJECT, {
+    siteUrl: 'http://vm-arch/sites/documentation',
+    listId: 'd0a9d56c-4d8a-43b1-9d0a-ceb123ec9b54',
+    itemId: 1706,
+  });
+
   const v1 = new Vue({
     components: { ProjectExcecutiveDocsForm },
     render: (h) => h(ProjectExcecutiveDocsForm)

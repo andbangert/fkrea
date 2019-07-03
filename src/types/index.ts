@@ -2,14 +2,12 @@ import { FormField } from './fields/FormField';
 import { FormFieldText } from './fields/FormFieldText';
 import { FormFieldLookup } from './fields/FormFieldLookup';
 import { SPClientRequestError } from './SPClientRequestError';
-import { FieldValidationResult } from './fields/FieldValidationResult';
 
 export {
     FormFieldLookup,
     FormFieldText,
     FormField,
     SPClientRequestError,
-    FieldValidationResult,
 };
 
 export enum FormMode {
@@ -43,13 +41,6 @@ export interface SelectLookupValue {
     url?: string;
 }
 
-// State
-export interface RootState {
-    loading: boolean;
-    projectId: number;
-    projectListId: string;
-}
-
 export interface SelectOptions {
     fieldName: string;
     options: SelectLookupValue[];
@@ -61,4 +52,23 @@ export interface ProjectItem {
     CreatedDate: Date;
     BuildObject: SelectLookupValue;
     Designer: SelectLookupValue[];
+}
+
+export interface Project {
+    id: number;
+    title: string;
+    buildObject?: SelectLookupValue;
+    builder?: SelectLookupValue[];
+    designer?: SelectLookupValue[];
+    jobTypes?: SelectLookupValue[];
+    contracts?: SelectLookupValue[];
+    createdDate?: Date;
+}
+
+// State
+export interface RootState {
+    loading: boolean;
+    setting?: ProjectMainSettings;
+    cardSettings?: ProjectCardSettings;
+    project?: Project;
 }

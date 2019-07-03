@@ -1,6 +1,7 @@
 ///// <reference path="constants.ts" />
 import {
     SPClientRequestError,
+    SelectLookupValue,
 } from './types';
 
 export async function SearchListObject(
@@ -233,4 +234,72 @@ export function getInputMultiLookupId(ctx: SPClientTemplates.FieldSchema_InForm)
     const prefixId = ctx.Name + '_' + ctx.Id;
     const pickerPrefixId = prefixId + '_MultiLookup';
     return pickerPrefixId;
+}
+
+export function parseMultiLookupValue(valueStr: string): SelectLookupValue[] {
+    if (valueStr === null || valueStr === '') {
+        return [];
+    }
+    const valueArray = [];
+    const valueLength = valueStr.length;
+    let beginning = 0;
+    let end = 0;
+    let bEscapeCharactersFound = false;
+
+    while (end < valueLength) {
+        if (valueStr[end] === ';') {
+            if (++end >= valueLength) {
+                break;
+            }
+            if (valueStr[end] === '#') {
+                if (end - 1 > beginning) {
+                    let foundValue = valueStr.substr(beginning, end - beginning - 1);
+
+                    if (bEscapeCharactersFound) {
+                        foundValue = foundValue.replace(/;;/g, ';');
+                    }
+                    valueArray.push(foundValue);
+                    bEscapeCharactersFound = false;
+                }
+                beginning = ++end;
+                continue;
+            } else if (valueStr[end] === ';') {
+                end++;
+                bEscapeCharactersFound = true;
+                continue;
+            } else {
+                return [];
+            }
+        }
+        end++;
+    }
+    if (end > beginning) {
+        let lastValue = valueStr.substr(beginning, end - beginning);
+        if (bEscapeCharactersFound) {
+            lastValue = lastValue.replace(/;;/g, ';');
+        }
+        valueArray.push(lastValue);
+    }
+    const resultArray = [];
+    const resultLength = valueArray.length;
+
+    for (let resultCount = 0; resultCount < resultLength; resultCount++) {
+        resultArray.push({
+            LookupId: Number(valueArray[resultCount++]),
+            LookupValue: valueArray[resultCount],
+        });
+    }
+    return resultArray;
+}
+
+export function convertToSelectLookup(value: SP.FieldLookupValue[]) {
+    if (!value) {
+        return [];
+    }
+    return value.map((lv) => {
+        return {
+            LookupId: lv.get_lookupId(),
+            LookupValue: lv.get_lookupValue(),
+        } as SelectLookupValue;
+    });
 }

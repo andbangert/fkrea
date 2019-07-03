@@ -15,6 +15,15 @@
 //     //}
 // }
 
+export const FieldNames = {
+    FieldBuildObj: 'BuildObj',
+    FieldTitle: 'Title',
+    FieldBuildingAddress: 'BuildingAddress',
+    FieldBuilder: 'Builder',
+    FieldContractor: 'Contractor',
+    FieldContracts: 'Contracts',
+};
+
 export namespace Fkrea {
     export namespace Fields {
         export const FieldTitle: string = 'Title';

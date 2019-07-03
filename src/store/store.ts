@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
+import { mutations } from './mutations';
+import { actions } from './actions';
 import { RootState } from '@/types';
+// import { getters } from './getters';
 
 Vue.use(Vuex);
 
@@ -14,18 +17,14 @@ Vue.use(Vuex);
 //   projectId: -1,
 // }
 
-const store: StoreOptions<RootState> = {
-
+const state: RootState = {
+  loading: false,
 };
 
-export default new Vuex.Store({
-  state: {
+const store: StoreOptions<RootState> = {
+  state,
+  mutations,
+  actions,
+};
 
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  },
-});
+export default new Vuex.Store(store);
