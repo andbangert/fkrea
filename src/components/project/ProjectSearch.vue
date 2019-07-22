@@ -27,7 +27,7 @@ import {
   ProjectCardSettings,
   FormFieldText,
   FormMode,
-  ProjectItem
+  ProjectItem,
 } from "../../types";
 
 import vSelect from "vue-select";
@@ -61,7 +61,7 @@ export default class ProjectSearch extends Vue {
   initializeBuilObject(select: VueSelectOptions) {
     const that = this;
     select.filterable = false;
-    select.placeholder = "Введите адрес объекта для поиска комплектов. Минимум 3 символа";
+    select.placeholder = 'Введите адрес объекта для поиска комплектов. Минимум 3 символа';
     select.onSearch = async function(
       queryText: string,
       loading: (val: boolean) => void
@@ -75,7 +75,7 @@ export default class ProjectSearch extends Vue {
         this.options = await that.SearchBuildObject(
           queryText,
           that.buildObjectList,
-          loading
+          loading,
         );
       } finally {
         loading(false);
@@ -92,7 +92,7 @@ export default class ProjectSearch extends Vue {
           const result = await ProjectFormHelper.getProjectsByBuildObject(
             this.siteUrl,
             this.projectList,
-            bosr.LookupId
+            bosr.LookupId,
           );
           that.projectsData = result;
         } catch (e) {
@@ -102,7 +102,7 @@ export default class ProjectSearch extends Vue {
     };
   }
 
-  async SearchBuildObject(
+  public async SearchBuildObject(
     queryText: string,
     listId: string,
     loading: (val: boolean) => void
@@ -110,8 +110,8 @@ export default class ProjectSearch extends Vue {
     let values: SelectLookupValue[] = new Array<SelectLookupValue>();
     try {
       const objr = await utils.SearchListObject(queryText, listId, 100, [
-        "ListItemID",
-        "Title"
+        'ListItemID',
+        'Title',
       ]);
       const results = objr as SP.JsonObjectResult;
       if (results) {
@@ -124,10 +124,10 @@ export default class ProjectSearch extends Vue {
           loading(false);
           return values;
         }
-        values = result.ResultTables[0].ResultRows.map(r => {
+        values = result.ResultTables[0].ResultRows.map((r) => {
           return {
             LookupId: r.ListItemID,
-            LookupValue: r.Title
+            LookupValue: r.Title,
           };
         });
       }

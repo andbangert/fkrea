@@ -1,19 +1,3 @@
-// export namespace Fkrea.Project {
-//     //export namespace Project {
-//     export const FieldTitle: string = 'Title';
-//     export const FieldStroiAddress: string = 'StroiAddress';
-//     export const FieldBuildObj: string = 'BuildObj';
-//     export const FieldDesigner: string = 'Designer';
-//     export const FieldProjDate: string = 'ProjDate';
-//     export const FieldRegion: string = 'Region';
-//     export const FieldRoomNum: string = 'RoomNum';
-//     export const FieldLockerNum: string = 'LockerNum';
-//     export const FieldRackNum: string = 'RackNum';
-//     export const FieldPath: string = 'Path';
-//     export const FieldTypeOfJobs: string = 'TypeOfJobs';
-//     export const SelectProp_ItemID = 'ItemID';
-//     //}
-// }
 
 export const FieldNames = {
     FieldBuildObj: 'BuildObj',
@@ -22,6 +6,28 @@ export const FieldNames = {
     FieldBuilder: 'Builder',
     FieldContractor: 'Contractor',
     FieldContracts: 'Contracts',
+    FieldTypeOfJobs: 'TypeOfJobs',
+    
+    FieldProject: 'Project',
+    FieldScanLink: 'ScanLink',
+    FieldScanFileSize: 'ScanFileSize',
+    FieldScanModified: 'ScanModified',
+    FieldJobType: 'JobType',
+    FieldDocumentType: 'DocumentType',
+    FieldRequired: 'Required',
+    FieldDocForm: 'DocForm',
+    FieldHasRemarks: 'HasRemarks',
+    FieldRemarks: 'Remarks',
+    FieldComment: 'Comment',
+    FieldStorage: 'Storage',
+    FieldReadyToArchive: 'ReadyToArchive',
+    FieldArchived: 'Archived',
+    FieldArchivedDate: 'ArchivedDate',
+    FieldReadyToArchiveDate: 'ReadyToArchiveDate',
+    FieldBarCode: 'BarCode',
+    FieldDesigner: 'Designer',
+    FieldObligatory: 'Obligatory',
+    FieldGroupsOfJob: 'GroupsOfJob',
 };
 
 export namespace Fkrea {

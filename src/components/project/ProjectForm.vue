@@ -43,7 +43,7 @@
                       :value="field.value"
                       v-model="field.value"
                       class="ms-long"
-                    >
+                    />
                   </span>
                 </template>
               </template>
@@ -79,6 +79,8 @@ import * as constants from "../../constants";
 import { ProjectFormHelper, ProjectResult } from "../../projectFormHelper";
 import proj = constants.Fkrea.Fields;
 import FieldLookupDisplay from "../forms/FieldLookupDisplay.vue";
+import { listItemToProject } from "@/Project/helper";
+import { initializeExecutiveDocs } from "@/docHelper";
 
 Vue.component("save-dialog", OnSaveDialogForm);
 Vue.component("v-select", vSelect);
@@ -108,6 +110,9 @@ export default class ProjectForm extends Vue {
   @Prop() itemId!: number;
   @Prop() mode!: FormMode;
   @Prop() scanLibId!: string;
+  @Prop() executiveDocCardListId!: string;
+  @Prop() executiveDocTypeListId!: string;
+
   helper!: ProjectFormHelper;
   // Strings
   _phBO = "Введите текст для поиска. Минимум 3 символа";
@@ -379,13 +384,21 @@ export default class ProjectForm extends Vue {
     this.helper
       .customSave(this.siteUrl, this.listId, this.itemId, this.mode)
       .then(result => {
-        SP.SOD.executeFunc(
-          constants.Fkrea.SPScripts.SP_UI_Dialog.Script,
-          constants.Fkrea.SPScripts.SP_UI_Dialog.ShowModalDialog,
-          () => {
-            this.showOnSaveDialog(result.get_id());
-          }
-        );
+        const project = listItemToProject(result);
+        initializeExecutiveDocs(
+          this.siteUrl,
+          this.executiveDocCardListId,
+          this.executiveDocTypeListId,
+          project
+        ).then(execCreateResult => {
+          SP.SOD.executeFunc(
+            constants.Fkrea.SPScripts.SP_UI_Dialog.Script,
+            constants.Fkrea.SPScripts.SP_UI_Dialog.ShowModalDialog,
+            () => {
+              this.showOnSaveDialog(result.get_id());
+            }
+          );
+        });
       })
       .catch(e => {});
   }

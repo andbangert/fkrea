@@ -2,6 +2,7 @@
 import {
     SPClientRequestError,
     SelectLookupValue,
+    FieldValueCollection,
 } from './types';
 
 export async function SearchListObject(
@@ -100,7 +101,7 @@ export async function getItemsByQuery(
                     const caml = new SP.CamlQuery();
                     caml.set_viewXml(query);
                     // Sets current position
-                    if (!position || position !== '') {
+                    if (position && position !== '') {
                         const posObj = new SP.ListItemCollectionPosition();
                         posObj.set_pagingInfo(position ? position : '');
                         caml.set_listItemCollectionPosition(posObj);
@@ -301,5 +302,95 @@ export function convertToSelectLookup(value: SP.FieldLookupValue[]) {
             LookupId: lv.get_lookupId(),
             LookupValue: lv.get_lookupValue(),
         } as SelectLookupValue;
+    });
+}
+
+// #region [ Save Functions ]
+export function createOrUpdateItem(siteUrl: string, listId: string, itemId: number, values: FieldValueCollection): Promise<SP.ListItem> {
+    return new Promise<SP.ListItem>((resolve, reject) => {
+        let item: SP.ListItem;
+        const initContext = new SP.ClientContext(siteUrl);
+        // console.log(siteUrl);
+        const formList = ((initContext.get_web()).get_lists()).getById(listId);
+        const params = new SP.ListItemCreationInformation();
+        let allFormValues = new Array<SP.ListItemFormUpdateValue>();
+
+        initContext.add_requestSucceeded((source, eventArgs) => {
+            resolve(item);
+        });
+        initContext.add_requestFailed((source, eventArgs) => {
+            // OnRequestFailed(source, eventArgs);
+            reject(new SPClientRequestError(eventArgs));
+        });
+        const isNew = itemId <= 0;
+        params.set_underlyingObjectType(0);
+        if (isNew) {
+            item = formList.addItem(params);
+        } else {
+            // console.log(ctx.itemAttributes.Id);
+            item = formList.getItemById(itemId);
+        }
+
+        const fields = Object.keys(values);
+        fields.forEach((fld) => {
+            const value = values[fld];
+            if (value !== null) {
+                const formUpdateValue = new SP.ListItemFormUpdateValue();
+                formUpdateValue.set_fieldName(fld);
+                formUpdateValue.set_fieldValue(value);
+                allFormValues.push(formUpdateValue);
+            }
+        });
+        const updateScope = new SP.ExceptionHandlingScope(initContext);
+        const updateScopeDispose = updateScope.startScope();
+        if (item) {
+            allFormValues = item.validateUpdateListItem(allFormValues, isNew);
+            updateScopeDispose.dispose();
+        }
+        initContext.load(item);
+        initContext.executeQueryAsync();
+    });
+}
+
+
+// #region [ Save Functions ]
+export function createBatchItems(siteUrl: string, listId: string, batchValues: FieldValueCollection[]): Promise<SP.ListItem[]> {
+    return new Promise<SP.ListItem[]>((resolve, reject) => {
+        const initContext = new SP.ClientContext(siteUrl);
+        // console.log(siteUrl);
+        const items: SP.ListItem[] = new Array<SP.ListItem>();
+        const formList = ((initContext.get_web()).get_lists()).getById(listId);
+        initContext.add_requestSucceeded((source, eventArgs) => {
+            resolve(items);
+        });
+        initContext.add_requestFailed((source, eventArgs) => {
+            // OnRequestFailed(source, eventArgs);
+            reject(new SPClientRequestError(eventArgs));
+        });
+        batchValues.forEach((values) => {
+            const params = new SP.ListItemCreationInformation();
+            let allFormValues = new Array<SP.ListItemFormUpdateValue>();
+            params.set_underlyingObjectType(0);
+            const item: SP.ListItem = formList.addItem(params);
+            const fields = Object.keys(values);
+            fields.forEach((fld) => {
+                const value = values[fld];
+                if (value !== null) {
+                    const formUpdateValue = new SP.ListItemFormUpdateValue();
+                    formUpdateValue.set_fieldName(fld);
+                    formUpdateValue.set_fieldValue(value);
+                    allFormValues.push(formUpdateValue);
+                }
+            });
+            const updateScope = new SP.ExceptionHandlingScope(initContext);
+            const updateScopeDispose = updateScope.startScope();
+            if (item) {
+                allFormValues = item.validateUpdateListItem(allFormValues, true);
+                updateScopeDispose.dispose();
+                items.push(item);
+            }
+            initContext.load(item);
+        });
+        initContext.executeQueryAsync();
     });
 }

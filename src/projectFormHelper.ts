@@ -36,6 +36,10 @@ export class ProjectFormHelper {
             .NumberField('ID')
             .EqualTo(Number(buildObjectId))
             .ToString();
+
+        console.log('utils.getItemsByQuery');
+        console.log(query);
+
         const projectsResult = await utils.getItemsByQuery(siteUrl, projectListId, query);
         const items: ProjectItem[] = new Array<ProjectItem>();
 

@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { mutations } from './mutations';
 import { actions } from './actions';
 import { RootState } from '@/types';
+import executiveDocs from './modules/executiveDocs/store'
 // import { getters } from './getters';
 
 Vue.use(Vuex);
@@ -25,6 +26,9 @@ const store: StoreOptions<RootState> = {
   state,
   mutations,
   actions,
+  modules: {
+    executiveDocs
+  }
 };
 
 export default new Vuex.Store(store);

@@ -11,7 +11,7 @@ declare namespace fkrea {
         scanLib: string;
         BuildingsListId: string;
     }
-    let projectCardSettings:ProjectCardSettings;
+    let projectCardSettings: ProjectCardSettings;
 }
 /**********************************************/
 
@@ -91,7 +91,7 @@ declare interface SearchResult {
 }
 
 interface Window {
-    [key:string]: any; // Add index signature
+    [key: string]: any; // Add index signature
 }
 
 declare interface SPGlobalFormContext {

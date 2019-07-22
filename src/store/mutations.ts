@@ -1,7 +1,7 @@
 import {
     RootState,
-    ProjectMainSettings,
-    ProjectCardSettings,
+    ProjectSiteSettings,
+    ArchiveSiteSettings,
     Project,
 } from '@/types';
 
@@ -10,17 +10,17 @@ const SET_LOADING = 'setLoading';
 const SET_PROJECT = 'setProject';
 
 export const mutations = {
-    [CONFIGURE_APP](state: RootState, payload: {
-        setting: ProjectMainSettings,
-        cardSettings: ProjectCardSettings,
+    [CONFIGURE_APP] (state: RootState, payload: {
+        projectSiteSettings: ProjectSiteSettings,
+        archiveSiteSettings: ArchiveSiteSettings,
     }) {
-        state.cardSettings = payload.cardSettings;
-        state.setting = payload.setting;
+        state.archiveSiteSettings = payload.archiveSiteSettings;
+        state.projectSiteSettings = payload.projectSiteSettings;
     },
-    [SET_LOADING](state: RootState, loading: boolean) {
+    [SET_LOADING] (state: RootState, loading: boolean) {
         state.loading = loading;
     },
-    [SET_PROJECT](state: RootState, project: Project){
+    [SET_PROJECT] (state: RootState, project: Project) {
         state.project = project;
     },
 };

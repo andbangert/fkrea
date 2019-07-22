@@ -335,7 +335,7 @@ export class ProjectForm {
     private setOptions(
         fieldName: string,
         options: SelectLookupValue[] | null,
-        multi: boolean = false
+        multi: boolean = false,
     ) {
         const vm = this.fieldVms.find((v) => v.fieldName === fieldName);
         if (vm) {
@@ -405,7 +405,7 @@ export class ProjectForm {
                     constants.Fkrea.SPScripts.SP_UI_Dialog.ShowModalDialog, () => {
                         this.showOnSaveDialog(result.get_id());
                     });
-            })
+            });
         // .catch((e) => {});
     }
 
@@ -447,10 +447,10 @@ export class ProjectForm {
             const params = new SP.ListItemCreationInformation();
             let allFormValues = new Array<SP.ListItemFormUpdateValue>();
 
-            initContext.add_requestSucceeded(function (source, eventArgs) {
+            initContext.add_requestSucceeded((source, eventArgs) => {
                 resolve(item);
             });
-            initContext.add_requestFailed(function (source, eventArgs) {
+            initContext.add_requestFailed((source, eventArgs) => {
                 // OnRequestFailed(source, eventArgs);
                 reject(new SPClientRequestError(eventArgs));
             });

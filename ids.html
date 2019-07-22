@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <title>web_app</title>
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/reset.css"/>
+        <link rel="stylesheet" href="css/style.css"/>
+
+        <script src="js/jquery-3.4.1.min.js"></script>
+        <script src="js/main.js"></script>
+    </head>
+    <body>
+
+    <div class="popup">
+        <h2>Документ</h2>
+        <form action="">
+            <div class="title">
+                <h2>Штрихкод</h2>
+                <h2>Система</h2>
+                <h2></h2>
+            </div>
+            <div class="fields">
+                <input type="text" value="1234263343346">
+                <select name="select">
+                    <option value="value1">1. Общие документы</option>
+                    <option value="value2">2. Ремонт пожарного водопровода</option>
+                    <option value="value3">3. Ремонт кровли</option>
+                    <option value="value4">4. Ремонт горячего водопровода</option>
+                </select>
+                <a href="#">Скан загружен</a>
+            </div>
+            <div class="title">
+                <h2>Название документа</h2>
+                <h2>Обязательный</h2>
+                <h2>Форма</h2>
+            </div>
+            <div class="fields">
+                <select name="select">
+                    <option value="value1">Акт гидравлических испытаний</option>
+                    <option value="value2">Акт гидравлических испытаний</option>
+                </select>
+                <select name="select">
+                    <option value="value1">Подлинник</option>
+                    <option value="value2">Подлинник</option>
+                </select>
+            </div>
+            <div class="title">
+                <div class="check">Замечания</div>
+                <input type="checkbox">
+            </div>
+            <div class="fields">
+                <textarea></textarea>
+            </div>
+            <div class="title">
+                <h2>Комментарий</h2>
+            </div>
+            <div class="fields">
+                <input type="text" value="Испытания не проводились">
+            </div>
+            <div class="title">
+                <h2>Место хранения</h2>
+            </div>
+            <div class="fields">
+                <span>Проспект Мира 9 /комн 113/Стеллаж А1/Ячейка А1-1/ Папка ЮВАО -196</span>
+            </div>
+
+            <div class="clearfix"></div>
+                <input type="submit">
+                <div class="run">Сохранить и выйти</div>
+                <div class="out">Отмена</div>
+            <div class="clearfix"></div>
+
+        </form>
+        <div class="clearfix"></div>
+    </div>
+    <div class="overlay"></div>
+    </body>
+</html>

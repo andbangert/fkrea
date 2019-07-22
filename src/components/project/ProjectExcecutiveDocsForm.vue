@@ -1,214 +1,114 @@
 <template>
-  <div>
-    <div class="fkr-container fkr-text fkr-color-gray">
-      <div class="db-container fkr-text fkr-color-gray">
-        <div class="db-row">
-          <div class="db-col-6">
-            <span class="fkr-page-title fkr-color-blue">Комплект исполнительной документации</span>
-          </div>
-          <div class="db-col-6">
-            <ul class="fkr-menu-links">
-              <li>
-                <a>Pic</a>
-              </li>
-              <li>
-                <a>Исполнительная</a>
-              </li>
-              <li>
-                <a>Проектная</a>
-              </li>
-            </ul>
-          </div>
-        </div>
+  <!-- 
+<a onclick="OpenPopUpPage('http:\u002f\u002fvm-arch\u002fsites\u002fdocumentation\u002f_layouts\u002f15\u002flistform.aspx?PageType=4\u0026ListId={ea94fe6e-fdb0-4609-93bf-f5d752e9c400}\u0026ID=14\u0026RootFolder=*', RefreshPage); return false;" href="http:\u002f\u002fvm-arch\u002fsites\u002fdocumentation\u002f_layouts\u002f15\u002flistform.aspx?PageType=4\u0026ListId={ea94fe6e-fdb0-4609-93bf-f5d752e9c400}\u0026ID=14\u0026RootFolder=*">замена внутреннего водостока</a>
+  -->
+
+  <div class="wrapper_big">
+    <header>
+      <h1>
+        Комплект исполнительной документации
+        <span>
+          <svg
+            width="34"
+            height="34"
+            viewBox="0 0 34 34"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M0 19.8099L19.7496 0.583966C20.5756 -0.220138 21.8506 -0.190297 22.6425 0.651673L27.474 5.78849C28.318 6.68577 28.2863 8.15061 27.4044 9.0057L7.72572 28.087H0V19.8099ZM2.09269 20.7894V25.862H6.91475L21.4086 11.8082L16.5819 6.68435L2.09269 20.7894ZM18.1269 5.18033L22.9565 10.3073L25.9943 7.36176L21.1628 2.22494L18.1269 5.18033Z"
+              fill="#6D6D6D"
+            />
+            <path d="M0 34V31.0435H34V34H0Z" fill="#6D6D6D" />
+          </svg>
+        </span>
+      </h1>
+      <div class="tabs">
+        <span class="active">Исполнительная</span>
+        <span>Проектная</span>
       </div>
-      <!-- Container -->
-      <div class="db-container">
-        <div class="db-row">
-          <div class="db-col-12">
-            <span
-              class="fkr-title fkr-color-blue"
-            >ЮЗАО, Академический район, 60-летия Октябряпросп. 18 к.3</span>
-          </div>
-        </div>
-        <div class="db-row">
-          <div class="db-col-6">
-            <span class="fkr-bold-text">Генподрядчик :</span>
-            <span>ЗАО Ремонтностроительная фимрма “Мосстройресурс”</span>
-          </div>
-          <div class="db-col-6">
-            <div class="db-container">
-              <div class="db-row">
-                <div class="db-col-2">
-                  <span class="fkr-bold-text">Договор :</span>
-                </div>
-                <div class="db-col-10">
-                  <div>
-                    <a>Договор подряда №31/86000-123 от 22.03.2018</a>
-                  </div>
-                  <div>
-                    <a>Договор подряда №31/86000-123 от 22.03.2018</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
+      <div class="clearfix"></div>
+    </header>
+    <div class="wrapper">
+      <div class="top">
+        <h2>{{ buildObject.LookupValue }}</h2>
       </div>
-      <!--table head-->
-      <div class="db-container">
-        <div class="db-row">
-          <div class="db-col-12">
-            <!--  -->
-            <table
-              class="fkr-doc-table"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              style="width:1080px"
-            >
-              <tr>
-                <th width="230px">Всего по объекту</th>
-                <th width="124px">Систем</th>
-                <th width="164px">Документов</th>
-                <th width="194px">Загружено</th>
-                <th width="204px">Всего по объекту</th>
-                <th width="164px">Замечаний</th>
-              </tr>
-              <tr>
-                <td></td>
-                <td>3</td>
-                <td>12</td>
-                <td>5</td>
-                <td>7 из 12</td>
-                <td>2</td>
-              </tr>
-            </table>
-
-            <!--Table Content-->
-            <table
-              class="fkr-doc-table fkr-content-table"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              style="width:1084px"
-            >
-              <tr class="fkr-header-row">
-                <td width="354px">
-                  <div class="fkr-header-title">1. Общие документы</div>
-                </td>
-                <td width="164px">4</td>
-                <td width="194px">3</td>
-                <td width="204px">3 из 4</td>
-                <td width="123px">1</td>
-                <td width="40px">1</td>
-              </tr>
-              <tr class="fkr-content-row">
-                <td>
-                  <div class="fkr-content-title">Акт гидравлических испытаний</div>
-                </td>
-                <td colspan="2">
-                  <div style="padding-top:10px; padding-bottom:10px">
-                    <div>
-                      <input type="text" class="fkr-input" style="width: 124px; height:32px">
-                      <button value>Скан</button>
-                      <span class="fkr-color-red">Замечания</span>
-                    </div>
-                    <div style="padding-top:10px;">
-                      <div class="fkr-add-text">1. Отсутствует подпись ответственного лица</div>
-                      <div class="fkr-add-text">2. Отсутствует печать организаци и подрядчика</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div style="padding-top:10px; padding-bottom:10px">
-                    <span>Обязательный</span>&nbsp;&nbsp;
-                    <span>89999&nbsp;Kb</span>
-                  </div>
-                </td>
-                <td colspan="2">
-                  <div style="padding-top:10px; padding-bottom:10px">20.04.2019</div>
-                </td>
-              </tr>
-              <tr class="fkr-footer-row">
-                <td width="1042px" colspan="5">
-                  <div class="fkr-footer-content">
-                    <button>Добавить документ</button>
-                  </div>
-                </td>
-                <td width="40px">1</td>
-              </tr>
-            </table>
-
-            <br>
-
-            <table
-              class="fkr-doc-table fkr-content-table"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              style="width:1084px"
-            >
-              <tr class="fkr-header-row">
-                <td width="354px">
-                  <div class="fkr-header-title">2. Ремонт пожарного водопровода</div>
-                </td>
-                <td width="164px">4</td>
-                <td width="194px">3</td>
-                <td width="204px">3 из 4</td>
-                <td width="123px">1</td>
-                <td width="40px">1</td>
-              </tr>
-            </table>
-            <br>
-
-            <table
-              class="fkr-doc-table"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              style="width:1084px"
-            >
-              <tr class="fkr-header-row">
-                <td width="518px">
-                  <div class="fkr-header-title">
-                    <button class="fkr-invert-btn" value="Печать реестра">Печать реестра</button>
-                  </div>
-                </td>
-                <td width="194px"></td>
-                <td width="204px">
-                  <div style="height:30px; vertical-align:middle">
-                    <input
-                      type="checkbox"
-                      style="font-family: Arial; font-style: normal;font-weight: normal;font-size: 10px;line-height: 10px; background: #2086BF; color:#ffffff"
-                    >
-                    <label
-                      style="font-family: Arial;font-style: normal;font-weight: normal;font-size: 14px;line-height: 18px;"
-                    >Подготовлен к передаче</label>
-                  </div>
-                </td>
-                <td width="164px">
-                  <div style="height:30px; vertical-align:middle">
-                    <input
-                      type="checkbox"
-                      style="font-family: Arial; font-style: normal;font-weight: normal;font-size: 10px;line-height: 10px; background: #2086BF; color:#ffffff"
-                    >
-                    <label
-                      style="font-family: Arial;font-style: normal;font-weight: normal;font-size: 14px;line-height: 18px;"
-                    >Принят в архив</label>
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
+      <div class="about">
+        <h2>Генподрядчик :</h2>
+        <p>
+          {{builder.LookupValue}}
+          <!-- ЗАО Ремонтностроительная
+          <br />фимрма “Мосстройресурс”-->
+        </p>
+        <h2>Договор :</h2>
+        <p>
+          <span v-for="item in contracts" :key="item.LookupId">
+            <a href="#">{{item.LookupValue}}</a>
+          </span>
+          <br />
+          <!-- <a href="#">Доп соглашение №32/86000-123 от 13.07.2018</a> -->
+        </p>
       </div>
+
+      <!-- System LIST -->
+      <SystemList v-bind:project="project"></SystemList>
+      <footer>
+        <a href="#" class="print">Печать реестра</a>
+        <form action>
+          <label for>Подготовлен к передаче</label>
+          <label for>Принят в архив</label>
+          <input type="checkbox" value="Подготовлен к передаче" />
+          <input type="checkbox" value="Проинят в архив" />
+          <span>20.04.2019</span>
+        </form>
+        <div class="clearfix"></div>
+      </footer>
     </div>
+    <div class="clearfix"></div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import ProjectHeader from "./ProjectHeader.vue";
+import SystemList from "@/components/docs/executive/SystemList.vue";
+import { createNamespacedHelpers } from "vuex";
+import { ExecutiveDocument, ExecutiveDocsState, Project } from "../../types";
+import { mapState, mapGetters, mapActions } from "vuex";
+import store from "@/store/store";
 
-@Component
+@Component({
+  components: {
+    SystemList
+  },
+  computed: {
+    ...mapState({
+      project: project => store.state.project
+    })
+  }
+})
 export default class ProjectExcecutiveDocsForm extends Vue {
+  private project!: Project;
+
+  get buildObject() {
+    if (
+      this.project &&
+      this.project.buildObject &&
+      this.project.buildObject.length
+    )
+      return this.project.buildObject[0];
+  }
+  get contracts() {
+    if (this.project && this.project.contracts && this.project.contracts.length)
+      return this.project.contracts;
+  }
+  get builder() {
+    if (this.project && this.project.builder && this.project.builder.length)
+      return this.project.builder[0];
+  }
+
+  private mounted() {}
 }
 </script>
