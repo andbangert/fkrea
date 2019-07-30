@@ -1,5 +1,5 @@
 <template>
-  <div class="popup" style="display: block;">
+  <div class="popup">
     <h2>Документ</h2>
     <form action>
       <div class="title">
@@ -16,11 +16,13 @@
             :key="jobType.LookupId"
           >{{ jobType.LookupValue }}</option>
         </select>
-        <a href="#">Скан загружен</a>
+        <a v-if="hasScan" :href="fileData.scanLink" target="_blank">Скан загружен</a>
+        <span v-else>Скан отсутствует</span>
       </div>
       <div class="title">
         <h2>Название документа</h2>
-        <h2>Обязательный</h2>
+        <h2 v-if="fileData.required">Обязательный</h2>
+        <h2 v-else>&nbsp;</h2>
         <h2>Форма</h2>
       </div>
       <div class="fields">
@@ -46,7 +48,7 @@
         <input type="checkbox" v-model="fileData.hasRemarks" />
       </div>
       <div class="fields">
-        <textarea v-model="fileData.remarks"></textarea>
+        <textarea v-model="fileData.remarks" :disabled="!fileData.hasRemarks"></textarea>
       </div>
       <div class="title">
         <h2>Комментарий</h2>
@@ -58,7 +60,7 @@
         <h2>Место хранения</h2>
       </div>
       <div class="fields">
-        <span>Проспект Мира 9 /комн 113/Стеллаж А1/Ячейка А1-1/ Папка ЮВАО -196</span>
+        <span>{{storageAddress}}</span>
       </div>
 
       <div class="clearfix"></div>
@@ -74,59 +76,194 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
+
+import {
+  createNamespacedHelpers,
+  ActionMethod,
+  mapState,
+  mapActions
+} from "vuex";
+import store from "@/store/modules/executiveDocs/store";
+import rootStore from "@/store/store";
+import actions from "@/store/action-types";
+
 import {
   ProjectSiteSettings,
   ExecutiveDocument,
   SelectLookupValue,
-  Project
+  Project,
+  StorageAddressSettings,
+  FileData
 } from "@/types";
 import {
   getAllListItemsAsSelectLookupValues,
   addExecutiveDoc,
-  getExecutiveDocTypes
+  getExecutiveDocTypes,
+  getStorageAddress,
+  getEmptyExecutiveDoc
 } from "@/docHelper";
+import actionTypes from "@/store/action-types";
+import { truncate } from "fs";
 
-@Component
+@Component({
+  computed: {
+    ...mapState({
+      project: project => rootStore.state.project,
+      siteSettings: siteSettings => rootStore.state.projectSiteSettings,
+      storageSettings: storageSettings => rootStore.state.storageSvcSettings
+    })
+  },
+  methods: {
+    ...mapActions("executiveDocs", {
+      getScanFile: actions.SCAN_EXEC_DOC,
+      editExecDoc: actions.EDIT_EXEC_DOC,
+      addExecDoc: actions.ADD_EXEC_DOC
+    })
+  }
+})
 export default class AddFile extends Vue {
-  @Prop()
-  public siteSettings!: ProjectSiteSettings;
+  // Props
   @Prop()
   public doc!: ExecutiveDocument;
   @Prop()
-  public projectId!: number;
+  public jobTypeId!: number;
+
+  // Store mappings
+  private storageSettings!: StorageAddressSettings;
+  private siteSettings!: ProjectSiteSettings;
+  private getScanFile!: ActionMethod;
+  private editExecDoc!: ActionMethod;
+  private project!: Project;
+  private addExecDoc!: ActionMethod;
 
   // Data
   private typesOfJobs: SelectLookupValue[] = new Array<SelectLookupValue>();
   private execDocTypes: SelectLookupValue[] = new Array<SelectLookupValue>();
   private fileData: ExecutiveDocument = this.doc
     ? this.doc
-    : {
-        id: 0,
-        hasRemarks: false,
-        required: false,
-        projectId: this.projectId ? this.projectId : -1
-      };
+    : getEmptyExecutiveDoc(this.project, this.jobTypeId);
+
+  private address: string = "";
+
+  // Computed
+  get scanUrl() {
+    return this.fileData.scanLink;
+  }
+
+  get hasScan() {
+    if (this.scanUrl && this.scanUrl !== "") {
+      return true;
+    }
+    return false;
+  }
+
+  get barCode() {
+    return this.fileData.barCode;
+  }
+
+  get storageAddress() {
+    return this.address;
+  }
+
+  // Watchers
+  @Watch("barCode")
+  private async barCodeChanged(newVal: string, oldVal: string) {
+    if (newVal.length === 13) {
+      const fileData = (await this.getScanFile(newVal)) as FileData[];
+      if (fileData.length > 0) {
+        const file = fileData[0];
+        this.fileData.scanLink = file.url;
+        this.fileData.scanSize = file.size;
+        this.fileData.scanDate = file.created;
+      } else {
+        this.fileData.scanLink = null;
+        this.fileData.scanDate = null;
+        this.fileData.scanSize = 0;
+      }
+      // Update storage address
+      await this.getFileAddress(newVal);
+    } else {
+      this.fileData.scanLink = null;
+      this.fileData.scanDate = null;
+      this.fileData.scanSize = 0;
+      this.address = "";
+    }
+  }
 
   // Hooks
-  private async created() {
+  private beforeCreate() {
+    this.$store.commit("initializeStore");
+  }
+
+  private created() {
     // Get All types of jobs
-    if (this.siteSettings.typesOfJobsListId) {
-      const typesOfJobs = await getAllListItemsAsSelectLookupValues(
-        this.siteSettings.siteUrl,
-        this.siteSettings.typesOfJobsListId
+    if (this.project && this.project.jobTypes) {
+      this.typesOfJobs.push(...this.project.jobTypes);
+      // When add new file this property should be reactive.
+      // Props initialized before state.
+      Vue.set(this.fileData, "projectId", this.project.id);
+    }
+    if (this.fileData) {
+      // Edit botton on item
+      this.initDocTypes(this.fileData.jobTypeId)
+        .then(() => {})
+        .catch(e => {});
+    } else if (this.jobTypeId) {
+      // Add botton on group
+      this.initDocTypes(this.jobTypeId)
+        .then(() => {})
+        .catch(e => {});
+    }
+  }
+
+  private mounted() {
+    if (this.fileData && this.fileData.barCode) {
+      const self = this;
+      this.getFileAddress(this.fileData.barCode);
+    }
+  }
+
+  // Methods
+  private async getFileAddress(barCode: string) {
+    if (
+      this.storageSettings &&
+      this.storageSettings.url &&
+      this.storageSettings.userId
+    ) {
+      this.address = await getStorageAddress(
+        this.storageSettings.url,
+        this.storageSettings.userId,
+        barCode
       );
-      this.typesOfJobs.push(...typesOfJobs);
-      // Initializ doc types
-      if (this.fileData && this.fileData.jobTypeId) {
-        await this.initDocTypes(this.fileData.jobTypeId);
-      }
     }
   }
 
   private async onSystemChanged() {
     if (this.fileData && this.fileData.jobTypeId) {
+      this.getJobTypeNameById(this.fileData.jobTypeId);
       await this.initDocTypes(this.fileData.jobTypeId);
+    }
+  }
+
+  private getJobTypeNameById(id: number) {
+    if (this.project.jobTypes) {
+      const jt = this.project.jobTypes.find(j => j.LookupId === id);
+      if (jt) {
+        return jt.LookupValue;
+      }
+    }
+    return "";
+  }
+
+  private setDocTypeName() {
+    if (this.execDocTypes) {
+      const jt = this.execDocTypes.find(
+        j => j.LookupId === this.fileData.docTypeId
+      );
+      if (jt) {
+        this.fileData.title = jt.LookupValue;
+      }
     }
   }
 
@@ -140,22 +277,20 @@ export default class AddFile extends Vue {
   }
 
   private async save(result: SP.UI.DialogResult) {
-    if (this.siteSettings.executiveDocCardsListId) {
-      const file = addExecutiveDoc(
-        this.siteSettings.siteUrl,
-        this.siteSettings.executiveDocCardsListId,
-        this.fileData
-      );
-      SP.SOD.executeFunc(
-        "sp.ui.dialog.js",
-        "SP.UI.ModalDialog.showModalDialog",
-        () => {
-          SP.UI.ModalDialog.commonModalDialogClose(result, file);
-        }
-      );
+    this.setDocTypeName(); // should be a watch.
+    if (this.fileData.id > 0) {
+      await this.editExecDoc(this.fileData);
     } else {
-      // Error....
+      await this.addExecDoc(this.fileData);
     }
+    const self = this;
+    SP.SOD.executeFunc(
+      "sp.ui.dialog.js",
+      "SP.UI.ModalDialog.showModalDialog",
+      () => {
+        SP.UI.ModalDialog.commonModalDialogClose(1, self.fileData);
+      }
+    );
   }
 
   private cancel(result: SP.UI.DialogResult) {
@@ -170,20 +305,19 @@ export default class AddFile extends Vue {
 
   // Helpers
   private async initDocTypes(jobTypeId: number) {
-    console.log("Init doc Types");
-    if (
-      this.siteSettings.executiveDocTypesListId &&
-      this.fileData &&
-      this.fileData.jobTypeId
-    ) {
+    if (this.siteSettings.executiveDocTypesListId) {
       const docTypes = await getExecutiveDocTypes(
         this.siteSettings.siteUrl,
         this.siteSettings.executiveDocTypesListId,
         [jobTypeId]
       );
-      console.log(docTypes);
       this.execDocTypes = [];
       this.execDocTypes.push(...docTypes);
+      // Set default for new doc.
+      if (this.fileData.id === 0 && this.execDocTypes.length > 0) {
+        this.fileData.title = this.execDocTypes[0].LookupValue;
+        this.fileData.docTypeId = this.execDocTypes[0].LookupId;
+      }
     }
   }
 }

@@ -40,10 +40,10 @@
                     <input
                       type="text"
                       :ref="field.name"
-                      :value="field.value"
                       v-model="field.value"
                       class="ms-long"
                     />
+                    <!-- :value="field.value" -->
                   </span>
                 </template>
               </template>
@@ -380,11 +380,11 @@ export default class ProjectForm extends Vue {
   }
 
   async onSave() {
-    console.log(this.mode);
     this.helper
       .customSave(this.siteUrl, this.listId, this.itemId, this.mode)
       .then(result => {
         const project = listItemToProject(result);
+        // Create cards of executive docs.
         initializeExecutiveDocs(
           this.siteUrl,
           this.executiveDocCardListId,
@@ -407,9 +407,7 @@ export default class ProjectForm extends Vue {
     let retUrl = this.siteUrl;
     try {
       let retUrl = GetUrlKeyValue("source");
-      console.log(retUrl);
       if (!retUrl || retUrl === "") {
-        console.log(retUrl);
         retUrl = this.siteUrl;
       }
     } catch (e) {}
@@ -418,7 +416,6 @@ export default class ProjectForm extends Vue {
   }
 
   showOnSaveDialog(projectId: number) {
-    console.log(projectId);
     SP.UI.ModalDialog.showModalDialog({
       autoSize: true,
       title: "Сохранение проекта...",

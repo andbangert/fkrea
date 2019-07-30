@@ -1,28 +1,49 @@
 import { GetterTree } from 'vuex';
 import types from '@/store/mutation-types';
-import { ExecutiveDocsState, ExecutiveDocument, RootState } from '@/types';
+import {
+    ExecutiveDocsState,
+    ExecutiveDocument,
+    RootState,
+    IndexedExecDocs
+} from '@/types';
 
 export const getters: GetterTree<ExecutiveDocsState, RootState> = {
-    documentCount(state): number {
+    groupedDocs(state): IndexedExecDocs {
+        const jobTypeIds = new Array<number>();
+        const grouped = state.documents.reduce((rv: IndexedExecDocs, x: ExecutiveDocument) => {
+            let jobType = x.jobTypeId;
+            if (!jobType) {
+                jobType = 0;
+            }
+            else {
+                jobTypeIds.push(jobType);
+            }
+            (rv[jobType] = rv[jobType] || []).push(x);
+            return rv;
+        }, {});
+        return grouped;
+    },
+    documentCount(state, getters): number {
         let count = 0;
-        if (state.groupedDocs) {
-            const keys: string[] = Object.keys(state.groupedDocs);
+        if (getters.groupedDocs) {
+            const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
                 const index = Number.parseInt(key);
-                count += state.groupedDocs[index].length;
+                count += getters.groupedDocs[index].length;
             });
             return count;
         }
         return 0;
     },
-    documentCountWithScan(state): number {
+    documentCountWithScan(state, getters): number {
         let count = 0;
 
-        if (state.groupedDocs) {
-            const keys: string[] = Object.keys(state.groupedDocs);
+        if (getters.groupedDocs) {
+            const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
                 const index = Number.parseInt(key);
-                const filter = state.groupedDocs[index].filter((doc) =>
+                const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
+                const filter = groupedDocs[index].filter((doc) =>
                     (doc.scanLink !== undefined && doc.scanLink !== null && doc.scanLink !== ''))
                 if (filter) {
                     count += filter.length;
@@ -32,13 +53,14 @@ export const getters: GetterTree<ExecutiveDocsState, RootState> = {
         }
         return 0;
     },
-    requiredDocumentCount(state): number {
+    requiredDocumentCount(state, getters): number {
         let count = 0;
-        if (state.groupedDocs) {
-            const keys: string[] = Object.keys(state.groupedDocs);
+        if (getters.groupedDocs) {
+            const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
                 const index = Number.parseInt(key);
-                const filter = state.groupedDocs[index].filter((doc) => doc.required);
+                const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
+                const filter = groupedDocs[index].filter((doc) => doc.required);
                 if (filter) {
                     count += filter.length;
                 }
@@ -47,13 +69,14 @@ export const getters: GetterTree<ExecutiveDocsState, RootState> = {
         }
         return 0;
     },
-    remarksCount(state): number {
+    remarksCount(state, getters): number {
         let count = 0;
-        if (state.groupedDocs) {
-            const keys: string[] = Object.keys(state.groupedDocs);
+        if (getters.groupedDocs) {
+            const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
                 const index = Number.parseInt(key);
-                const filter = state.groupedDocs[index].filter((doc) => doc.hasRemarks);
+                const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
+                const filter = groupedDocs[index].filter((doc) => doc.hasRemarks);
                 if (filter) {
                     count += filter.length;
                 }

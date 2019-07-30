@@ -47,6 +47,10 @@ export interface Project {
     jobTypes?: SelectLookupValue[];
     contracts?: SelectLookupValue[];
     createdDate?: Date;
+    executiveDocsArchived: boolean;
+    executiveDocsArchivedDate?: Date | null,
+    executiveDocsReadyToArchive: boolean,
+    executiveDocsReadyToArchiveDate?: Date | null,
 }
 
 
@@ -91,15 +95,20 @@ export interface ProjectSiteSettings {
     contractorsListId?: string;
     executiveDocLibListId?: string;
     executiveDocCardsListId?: string;
+    executiveDocTypesListId?: string;
     projectListId?: string;
     typesOfJobsListId?: string;
-    executiveDocTypesListId?: string;
 }
 
+export interface StorageAddressSettings {
+    url: string,
+    userId: string,
+}
 
 // State
 export interface RootState {
     loading: boolean;
+    storageSvcSettings?: StorageAddressSettings;
     projectSiteSettings?: ProjectSiteSettings;
     archiveSiteSettings?: ArchiveSiteSettings;
     projectItemSettings?: ItemSettings;
@@ -111,7 +120,7 @@ export interface ExecutiveDocsState {
     siteUrl: string;
     docCardListId: string;
     documents: ExecutiveDocument[];
-    groupedDocs: IndexedExecDocs;
+    // groupedDocs: IndexedExecDocs;
     // groupedDocTypes: IndexedExecDocsTypes;
     // docTypes: SelectLookupValue[];
 }
@@ -123,18 +132,20 @@ export interface FieldValueCollection {
 export interface ExecutiveDocument {
     id: number;
     projectId?: number;
-    barCode?: string;
+    barCode?: string | null;
     docTypeId?: number;
     docTypeName?: string;
-    jobTypeId?: number;
+    jobTypeId: number;
     hasRemarks: boolean;
-    remarks?: string;
-    comment?: string;
+    remarks?: string | null;
+    comment?: string | null;
     title?: string;
     required: boolean;
-    formType?: string;
-    scanLink?: string;
-    scanDate?: Date;
+    formType?: string | null;
+    scanLink?: string | null;
+    scanDate?: Date | null;
+    scanSize?: number | null;
+    changed: boolean;
 }
 
 export interface IndexedExecDocs {
@@ -142,4 +153,12 @@ export interface IndexedExecDocs {
 }
 export interface IndexedExecDocsTypes {
     [jobTypeId: number]: SelectLookupValue[];
+}
+
+export interface FileData {
+    url: string;
+    name: string;
+    size: number;
+    created: Date;
+    modified: Date;
 }

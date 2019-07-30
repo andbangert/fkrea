@@ -3,7 +3,7 @@ const webpack = require('webpack');
 // Save to SharePoint Assets Library
 var spsave = require("spsave").spsave;
 var coreOptions = {
-    siteUrl: 'http://vm-arch/sites/documentation',
+    siteUrl: 'http://fkrea/sites/documentation',
     notification: true,
     checkin: true,
     checkinType: 1,

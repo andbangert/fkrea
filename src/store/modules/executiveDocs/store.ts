@@ -13,7 +13,7 @@ const state: ExecutiveDocsState = {
     siteUrl: '/',
     docCardListId: '/',
     documents: new Array<ExecutiveDocument>(),
-    groupedDocs: {},
+    // groupedDocs: {},
     //groupedDocTypes: {},
 };
 

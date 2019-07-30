@@ -14,7 +14,10 @@ export function listItemToProject(item: SP.ListItem): Project {
     const builder: SP.FieldLookupValue[] = values[FieldNames.FieldBuilder] as SP.FieldLookupValue[];
     const contracts: string = values[FieldNames.FieldContracts] as string;
     const designer: SP.FieldLookupValue[] = values[FieldNames.FieldDesigner] as SP.FieldLookupValue[];
-
+    const archived: boolean = values[FieldNames.FieldExecutiveDocsArchived] as boolean;
+    const archivedDate: Date = values[FieldNames.FieldExecutiveDocsArchivedDate] as Date;
+    const readyToArchive: boolean = values[FieldNames.FieldExecutiveDocsReadyToArchive] as boolean;
+    const readyToArchiveDate: Date = values[FieldNames.FieldExecutiveDocsReadyToArchiveDate] as Date;
     return {
         id: item.get_id(),
         title: title,
@@ -23,5 +26,9 @@ export function listItemToProject(item: SP.ListItem): Project {
         builder: convertToSelectLookup(builder),
         contracts: parseMultiLookupValue(contracts),
         designer: convertToSelectLookup(designer),
+        executiveDocsArchived: archived,
+        executiveDocsArchivedDate: archivedDate,
+        executiveDocsReadyToArchive: readyToArchive,
+        executiveDocsReadyToArchiveDate: readyToArchiveDate,
     }
 }

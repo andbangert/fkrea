@@ -7,7 +7,7 @@
     </template>
     <template v-else>
       <span>
-        <a :href="url(singleValue)">{{singleValue.LookupValue}}</a>&nbsp;
+        <a :href="url(singleValue)" target="_blank">{{singleValue.LookupValue}}</a>&nbsp;
       </span>
     </template>
   </span>

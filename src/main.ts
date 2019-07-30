@@ -1,64 +1,102 @@
 import Vue from 'vue';
-import { ProjectCardSettings, ProjectMainSettings } from './types';
+import {
+  ProjectCardSettings,
+  ProjectMainSettings,
+  RootState,
+  ProjectSiteSettings,
+  ArchiveSiteSettings,
+  StorageAddressSettings,
+  ExecutiveDocument,
+  FieldValueCollection,
+} from './types';
 import { ProjectFieldInitializer } from '@/projectCardInitializer';
 import ProjectForm from './components/project/ProjectForm.vue';
 import ProjectSearch from './components/project/ProjectSearch.vue';
 import ProjectExcecutiveDocsForm from './components/project/ProjectExcecutiveDocsForm.vue';
 import actions from '@/store/action-types';
 import store from './store/store';
-
+import axios from 'axios';
 import '@/scss/v-select.css';
 import '@/scss/form.css';
 import '@/scss/executive.css';
+import { getStorageAddress, initializeExecutiveDocs } from './docHelper';
+import { createOrUpdateItem, dateToFormString } from './utilities';
+import { FieldNames } from './constants';
 
 Vue.config.productionTip = false;
 
-// export async function InitializeProjectExecutiveDocs(settings: ProjectMainSettings, cardSettings: ProjectCardSettings) {
-export async function InitializeProjectExecutiveDocs() {
-  // await store.dispatch(actions.LOAD_PROJECT, {
-  //   siteUrl: 'http://vm-arch/sites/documentation',
-  //   listId: 'd0a9d56c-4d8a-43b1-9d0a-ceb123ec9b54',
-  //   itemId: 1706,
-  // });
+export async function InitializeProjectExecutiveDocs(
+  projSiteSettings?: ProjectSiteSettings,
+  archSiteSettings?: ArchiveSiteSettings,
+  storageSettings?: StorageAddressSettings) {
 
+  const pidStr = GetUrlKeyValue('pid');
+  if (!pidStr && pidStr === '') {
+    throw Error('Project id must be set as get parameter.');
+  }
+
+  const projectId: number = Number(pidStr);
+  if (isNaN(projectId)) {
+    throw Error('Project id must be a number.');
+  }
+  // Storage Address API
+  if (!storageSettings) {
+    storageSettings = {
+      url: 'http://5.200.53.136/classes/workBase.php',
+      userId: '4C54FB6E-7D7B-49B1-9E8C-7D560BB630AE',
+    };
+  }
   // Archive site
-  const archSiteSettings = {
-    siteUrl: 'http://vm-arch/',
-    docListId: '',
-    scanDocLibListId: '',
-  };
-
+  if (!archSiteSettings) {
+    archSiteSettings = {
+      siteUrl: 'http://vm-arch/',
+      docListId: '',
+      scanDocLibListId: '',
+    };
+  }
   // Project Site
-  const projSiteSettings = {
-    siteUrl: 'http://vm-arch/sites/documentation',
-    buildingsListId: 'faefac83-f507-48ed-89bc-f2a62d338bfe',
-    contractorsListId: '080cbb6c-c2d3-4a85-bea6-fe7a82b91103',
-    executiveDocLibListId: '8ce27767-7234-43c9-a78e-c81f3b042b49',
-    executiveDocCardsListId: 'e7fbd4fb-ed60-475f-9f2d-dc0bfa7a021c',
-    projectListId: 'd0a9d56c-4d8a-43b1-9d0a-ceb123ec9b54',
-    typesOfJobsListId: 'ea94fe6e-fdb0-4609-93bf-f5d752e9c400',
-    executiveDocTypesListId: '6647f002-47e0-4e8f-a2c0-d0bc8dfe2ab4',
-  };
+  if (!projSiteSettings) {
+    projSiteSettings = {
+      siteUrl: 'http://vm-arch/sites/documentation',
+      buildingsListId: 'faefac83-f507-48ed-89bc-f2a62d338bfe',
+      contractorsListId: '080cbb6c-c2d3-4a85-bea6-fe7a82b91103',
+      executiveDocLibListId: '8ce27767-7234-43c9-a78e-c81f3b042b49',
+      executiveDocCardsListId: 'e7fbd4fb-ed60-475f-9f2d-dc0bfa7a021c',
+      projectListId: 'd0a9d56c-4d8a-43b1-9d0a-ceb123ec9b54',
+      typesOfJobsListId: 'ea94fe6e-fdb0-4609-93bf-f5d752e9c400',
+      executiveDocTypesListId: '6647f002-47e0-4e8f-a2c0-d0bc8dfe2ab4',
+    };
+  }
+
+  //createItemTest(projSiteSettings);
+  window.localStorage.removeItem('store_' + projectId);
+  store.subscribe((mutation, state: RootState) => {
+    console.log('state updated');
+    console.log(mutation);
+    console.log(state);
+
+    // Remove an old
+    window.localStorage.setItem('store_' + projectId, JSON.stringify(state));
+  });
 
   await store.dispatch(actions.INIT_STATE, {
     projectSiteSettings: projSiteSettings,
     archiveSiteSettings: archSiteSettings,
+    storageSettings: storageSettings,
   });
-
-  var projectId = Number(GetUrlKeyValue('pid'));
 
   await store.dispatch(actions.LOAD_PROJECT, {
-    siteUrl: 'http://vm-arch/sites/documentation',
-    listId: 'd0a9d56c-4d8a-43b1-9d0a-ceb123ec9b54',
+    siteUrl: projSiteSettings.siteUrl,
+    listId: projSiteSettings.projectListId,
     itemId: projectId,
   });
 
-  await store.dispatch('executiveDocs/'+actions.LOAD_EXEC_DOCS, {
-    siteUrl: 'http://vm-arch/sites/documentation',
-    listId: 'd0a9d56c-4d8a-43b1-9d0a-ceb123ec9b54',
+  await store.dispatch('executiveDocs/' + actions.LOAD_EXEC_DOCS, {
+    siteUrl: projSiteSettings.siteUrl,
+    listId: projSiteSettings.executiveDocLibListId,
     itemId: projectId,
   });
-  
+
   const v1 = new Vue({
     components: { ProjectExcecutiveDocsForm },
     render: (h) => h(ProjectExcecutiveDocsForm, {

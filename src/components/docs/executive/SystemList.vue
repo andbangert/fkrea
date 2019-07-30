@@ -18,9 +18,8 @@
       <h2>{{remarksCount}}</h2>
       <h2></h2>
     </div>
-
     <div class="one" v-for="(jobType, index) in project.jobTypes" :key="jobType.LookupId">
-      <div class="title">
+      <div class="title" @click="showClick(index)" :class="active(index)">
         <h2>{{index+1}}.&nbsp;{{ jobType.LookupValue }}</h2>
         <h2>{{docCount(jobType.LookupId)}}</h2>
         <h2>{{docsWithScanCount(jobType.LookupId)}}</h2>
@@ -43,7 +42,13 @@
           </span>
         </h2>
       </div>
-      <doc-list v-bind:docs="getDocsBySystemId(jobType.LookupId)" v-bind:jobType="jobType.LookupId"></doc-list>
+      <transition name="slide">
+        <doc-list
+          v-if="show(index)"
+          v-bind:docs="getDocsBySystemId(jobType.LookupId)"
+          v-bind:jobTypeId="jobType.LookupId"
+        ></doc-list>
+      </transition>
     </div>
   </div>
 </template>
@@ -72,23 +77,25 @@ const store = storeExec.state as ExecutiveDocsState;
     DocList
   },
   computed: {
-    ...mapState({
-      docs: docs => store.groupedDocs
-    }),
+    // ...mapState({
+    //   docs: docs => store.groupedDocs
+    // }),
     ...mapGetters([
       "documentCount",
       "requiredDocumentCount",
       "documentCountWithScan",
-      "remarksCount"
+      "remarksCount",
+      "groupedDocs"
     ])
   }
 })
 export default class SystemList extends Vue {
   @Prop()
   private project!: Project;
-  private docs!: IndexedExecDocs;
 
   // Data
+  private groupedDocs!: IndexedExecDocs;
+  private showMenu: { active: boolean }[] = [];
   private documentCount!: Computed;
   private requiredDocumentCount!: Computed;
   private documentCountWithScan!: Computed;
@@ -98,8 +105,25 @@ export default class SystemList extends Vue {
   get systemCount() {
     return this.project.jobTypes ? this.project.jobTypes.length : 0;
   }
+  get docs() {
+    return this.groupedDocs;
+  }
 
   // Methods
+  private active(index: number) {
+    const flag = this.showMenu[index];
+    return flag;
+  }
+  private show(index: number) {
+    const flag = this.showMenu[index];
+    return flag.active;
+  }
+  private showClick(index: number) {
+    const flag = this.showMenu[index];
+    if (flag) {
+      flag.active = !flag.active;
+    }
+  }
   private getDocsBySystemId(systemId: number) {
     return this.docs[systemId];
   }
@@ -110,7 +134,7 @@ export default class SystemList extends Vue {
   private requiredCount(systemId: number) {
     const docs = this.docs[systemId];
     if (docs) {
-      const filter = docs.filter(doc => doc.required);
+      const filter = docs.filter(doc => doc.barCode && doc.barCode !== "");
       return filter ? filter.length : 0;
     }
     return 0;
@@ -137,7 +161,55 @@ export default class SystemList extends Vue {
     return 0;
   }
 
+  // Hooks
+  created() {
+    if (this.project.jobTypes) {
+      // this.showMenu.length = this.project.jobTypes.length;
+      let k = 0;
+      this.project.jobTypes.forEach(jt => {
+        Vue.set(this.showMenu, k, { active: false });
+        k++;
+      });
+    }
+  }
   mounted() {}
 }
 </script>
 
+<style>
+.slide-enter-active {
+  -moz-transition-duration: 0.3s;
+  -webkit-transition-duration: 0.3s;
+  -o-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -moz-transition-timing-function: ease-in;
+  -webkit-transition-timing-function: ease-in;
+  -o-transition-timing-function: ease-in;
+  transition-timing-function: ease-in;
+  /* display: block; */
+}
+
+.slide-leave-active {
+  -moz-transition-duration: 0.3s;
+  -webkit-transition-duration: 0.3s;
+  -o-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  -o-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  /* display: none; */
+}
+
+.slide-enter-to,
+.slide-leave {
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.slide-enter,
+.slide-leave-to {
+  overflow: hidden;
+  max-height: 0;
+}
+</style>

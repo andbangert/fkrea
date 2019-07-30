@@ -23,7 +23,7 @@ import storeExec from "@/store/modules/executiveDocs/store";
 import DocItem from "./DocItem.vue";
 import { addFileDialog } from "@/components/project/inline";
 import actions from "@/store/action-types";
-import { showEditExecDocDialog } from '@/components/project/inline';
+import { showEditExecDocDialog } from "@/components/project/inline";
 import {
   createNamespacedHelpers,
   ActionMethod,
@@ -43,7 +43,7 @@ const state = storeExec.state as ExecutiveDocsState;
     ...mapState({
       project: project => rootStore.state.project,
       settings: settings => rootStore.state.projectSiteSettings
-    })
+    }),
   },
   methods: {
     ...mapActions(nsedocs, {
@@ -55,21 +55,25 @@ export default class DocList extends Vue {
   @Prop()
   private docs!: ExecutiveDocument[];
   @Prop()
-  private docTypes!: SelectLookupValue[];
-  @Prop()
-  private jobType!: number;
+  private jobTypeId!: number;
 
   // State Computed
   private project!: Project;
   private settings!: ProjectSiteSettings;
-  
+
   // State Actions
   private addDoc!: ActionMethod;
 
   private addFile() {
-    showEditExecDocDialog((doc) => {
-      this.addDoc(doc);
-    }, this.settings, this.project.id);
+    // const self = this;
+    showEditExecDocDialog(
+      (doc) => {
+        // console.log(doc);
+        // self.addDoc(doc);
+      },
+      undefined,
+      this.jobTypeId
+    );
   }
 }
 </script>

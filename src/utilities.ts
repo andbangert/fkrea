@@ -4,6 +4,7 @@ import {
     SelectLookupValue,
     FieldValueCollection,
 } from './types';
+import { format } from 'date-fns';
 
 export async function SearchListObject(
     searchText: string,
@@ -306,7 +307,12 @@ export function convertToSelectLookup(value: SP.FieldLookupValue[]) {
 }
 
 // #region [ Save Functions ]
-export function createOrUpdateItem(siteUrl: string, listId: string, itemId: number, values: FieldValueCollection): Promise<SP.ListItem> {
+export function createOrUpdateItem(
+    siteUrl: string,
+    listId: string,
+    itemId: number,
+    values: FieldValueCollection,
+    checkNull: boolean = true): Promise<SP.ListItem> {
     return new Promise<SP.ListItem>((resolve, reject) => {
         let item: SP.ListItem;
         const initContext = new SP.ClientContext(siteUrl);
@@ -316,6 +322,7 @@ export function createOrUpdateItem(siteUrl: string, listId: string, itemId: numb
         let allFormValues = new Array<SP.ListItemFormUpdateValue>();
 
         initContext.add_requestSucceeded((source, eventArgs) => {
+            console.log(item.get_id());
             resolve(item);
         });
         initContext.add_requestFailed((source, eventArgs) => {
@@ -334,7 +341,14 @@ export function createOrUpdateItem(siteUrl: string, listId: string, itemId: numb
         const fields = Object.keys(values);
         fields.forEach((fld) => {
             const value = values[fld];
-            if (value !== null) {
+            if (checkNull) {
+                if (value !== null) {
+                    const formUpdateValue = new SP.ListItemFormUpdateValue();
+                    formUpdateValue.set_fieldName(fld);
+                    formUpdateValue.set_fieldValue(value);
+                    allFormValues.push(formUpdateValue);
+                }
+            } else {
                 const formUpdateValue = new SP.ListItemFormUpdateValue();
                 formUpdateValue.set_fieldName(fld);
                 formUpdateValue.set_fieldValue(value);
@@ -394,3 +408,27 @@ export function createBatchItems(siteUrl: string, listId: string, batchValues: F
         initContext.executeQueryAsync();
     });
 }
+
+// #region [ Save Functions ]
+export function removeListItemById(siteUrl: string, listId: string, itemId: number): Promise<SP.ListItem[]> {
+    return new Promise<SP.ListItem[]>((resolve, reject) => {
+        const initContext = new SP.ClientContext(siteUrl);
+        // console.log(siteUrl);
+        const items: SP.ListItem[] = new Array<SP.ListItem>();
+        const formList = ((initContext.get_web()).get_lists()).getById(listId);
+        const listItem = formList.getItemById(itemId);
+        listItem.deleteObject();
+        initContext.add_requestSucceeded((source, eventArgs) => {
+            resolve(items);
+        });
+        initContext.add_requestFailed((source, eventArgs) => {
+            // OnRequestFailed(source, eventArgs);
+            reject(new SPClientRequestError(eventArgs));
+        });
+        initContext.executeQueryAsync();
+    });
+}
+
+export const dateToFormString = (dateTime: Date): string => {
+    return format(dateTime, 'M/D/YYYY h:m A');
+};
