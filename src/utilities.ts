@@ -430,5 +430,9 @@ export function removeListItemById(siteUrl: string, listId: string, itemId: numb
 }
 
 export const dateToFormString = (dateTime: Date): string => {
-    return format(dateTime, 'M/D/YYYY h:m A');
+    // TODO: This should be reworked!!!
+    const d = _spPageContextInfo.currentLanguage === 1049
+    ? format(dateTime, 'D/M/YYYY h:m A')
+    : format(dateTime, 'M/D/YYYY h:m A');
+    return d;
 };

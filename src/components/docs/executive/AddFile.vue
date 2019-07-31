@@ -175,17 +175,19 @@ export default class AddFile extends Vue {
         const file = fileData[0];
         this.fileData.scanLink = file.url;
         this.fileData.scanSize = file.size;
-        this.fileData.scanDate = file.created;
+        Vue.set(this.fileData, 'scanDate', file.modified);
       } else {
         this.fileData.scanLink = null;
-        this.fileData.scanDate = null;
+        //this.fileData.scanDate = null;
+        Vue.set(this.fileData, 'scanDate', null);
         this.fileData.scanSize = 0;
       }
       // Update storage address
       await this.getFileAddress(newVal);
     } else {
       this.fileData.scanLink = null;
-      this.fileData.scanDate = null;
+      // this.fileData.scanDate = null;
+      Vue.set(this.fileData, 'scanDate', null);
       this.fileData.scanSize = 0;
       this.address = "";
     }
@@ -311,8 +313,17 @@ export default class AddFile extends Vue {
         this.siteSettings.executiveDocTypesListId,
         [jobTypeId]
       );
-      this.execDocTypes = [];
-      this.execDocTypes.push(...docTypes);
+      this.execDocTypes.push(
+        ...docTypes.sort((a, b) => {
+          if (a.LookupValue > b.LookupValue) {
+            return 1;
+          }
+          if (a.LookupValue < b.LookupValue) {
+            return -1;
+          }
+          return 0;
+        })
+      );
       // Set default for new doc.
       if (this.fileData.id === 0 && this.execDocTypes.length > 0) {
         this.fileData.title = this.execDocTypes[0].LookupValue;

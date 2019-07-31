@@ -71,10 +71,6 @@ export async function InitializeProjectExecutiveDocs(
   //createItemTest(projSiteSettings);
   window.localStorage.removeItem('store_' + projectId);
   store.subscribe((mutation, state: RootState) => {
-    console.log('state updated');
-    console.log(mutation);
-    console.log(state);
-
     // Remove an old
     window.localStorage.setItem('store_' + projectId, JSON.stringify(state));
   });

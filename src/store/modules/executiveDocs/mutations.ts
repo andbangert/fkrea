@@ -6,10 +6,19 @@ import { ExecutiveDocsState, ExecutiveDocument, IndexedExecDocsTypes, IndexedExe
 export const mutations: MutationTree<ExecutiveDocsState> = {
     [types.SET_EXEC_DOCS](state, payload: { docs: ExecutiveDocument[] }) {
         if (payload.docs.length > 0) {
-            state.documents.push(...payload.docs);
+            state.documents.push(...payload.docs.sort((a, b) => {
+                if (a.title && b.title) {
+                    if (a.title > b.title) {
+                        return 1;
+                    }
+                    if (a.title < b.title) {
+                        return -1;
+                    }
+                    return 0;
+                }
+                return 0;
+            }));
         }
-        //Vue.set(state.groupedDocs, '')
-        // state.groupedDocs = payload.grouped;
     },
     [types.ADD_EXEC_DOC](state, docs: ExecutiveDocument[]) {
         if (docs && docs.length > 0) {

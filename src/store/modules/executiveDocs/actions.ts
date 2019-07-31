@@ -190,6 +190,7 @@ export const actions: ActionTree<ExecutiveDocsState, RootState> = {
             if (files.length) {
                 docs.push(...files);
             }
+            console.log(files);
         }
 
         if (rootState.archiveSiteSettings &&
@@ -203,7 +204,9 @@ export const actions: ActionTree<ExecutiveDocsState, RootState> = {
             if (files.length) {
                 docs.push(...files);
             }
+            console.log(files);
         }
+        return docs;
     },
 };
 

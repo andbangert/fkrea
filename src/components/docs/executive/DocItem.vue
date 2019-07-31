@@ -1,7 +1,7 @@
 <template>
   <div class="item">
     <div class="grid">
-      <h2>{{document.docTypeName}}</h2>
+      <h2>{{document.title}}</h2>
     </div>
     <div class="grid">
       <input type="text" :value="document.barCode" disabled />

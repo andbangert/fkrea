@@ -37,12 +37,7 @@
                 </template>
                 <template v-else>
                   <span dir="none">
-                    <input
-                      type="text"
-                      :ref="field.name"
-                      v-model="field.value"
-                      class="ms-long"
-                    />
+                    <input type="text" :ref="field.name" v-model="field.value" class="ms-long" />
                     <!-- :value="field.value" -->
                   </span>
                 </template>
@@ -380,17 +375,36 @@ export default class ProjectForm extends Vue {
   }
 
   async onSave() {
+    const self = this;
     this.helper
       .customSave(this.siteUrl, this.listId, this.itemId, this.mode)
       .then(result => {
         const project = listItemToProject(result);
         // Create cards of executive docs.
-        initializeExecutiveDocs(
-          this.siteUrl,
-          this.executiveDocCardListId,
-          this.executiveDocTypeListId,
-          project
-        ).then(execCreateResult => {
+        if (self.mode === FormMode.New) {
+          initializeExecutiveDocs(
+            this.siteUrl,
+            this.executiveDocCardListId,
+            this.executiveDocTypeListId,
+            project
+          )
+            .then(execCreateResult => {
+              SP.SOD.executeFunc(
+                constants.Fkrea.SPScripts.SP_UI_Dialog.Script,
+                constants.Fkrea.SPScripts.SP_UI_Dialog.ShowModalDialog,
+                () => {
+                  this.showOnSaveDialog(result.get_id());
+                }
+              );
+            })
+            .catch(er => {
+              const err = er as Error;
+              self.helper.notifyOnError(
+                "Возникла ошибка при создании исполнительной документации.",
+                err ? err.message : ""
+              );
+            });
+        } else {
           SP.SOD.executeFunc(
             constants.Fkrea.SPScripts.SP_UI_Dialog.Script,
             constants.Fkrea.SPScripts.SP_UI_Dialog.ShowModalDialog,
@@ -398,9 +412,15 @@ export default class ProjectForm extends Vue {
               this.showOnSaveDialog(result.get_id());
             }
           );
-        });
+        }
       })
-      .catch(e => {});
+      .catch(e => {
+        const err = e as Error;
+        self.helper.notifyOnError(
+          "Возникла ошибка при сохранении комплекта.",
+          err ? err.message : ""
+        );
+      });
   }
 
   private _Cancel() {

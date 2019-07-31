@@ -17,6 +17,7 @@ import {
 } from '@/utilities';
 
 function getExecDocAsFields(document: ExecutiveDocument): FieldValueCollection {
+    console.log(document.scanDate);
     const values: FieldValueCollection = {
         [FieldNames.FieldTitle]: document.title && document.title !== '' ? document.title : '',
         [FieldNames.FieldHasRemarks]: document.hasRemarks,
@@ -50,7 +51,26 @@ function getExecDocAsFields(document: ExecutiveDocument): FieldValueCollection {
         url.set_url('');
         values[FieldNames.FieldScanLink] = url;
     }
+    console.log(document.scanDate);
     if (document.scanDate) {
+        // const Utility = {
+        //     pad: function (number: number) {
+        //         if (number < 10) {
+        //             return '0' + number;
+        //         }
+        //         return number;
+        //     },
+
+        //     CreateISO8601DateTimeFromSystemDateTime: function (dt: Date) {
+        //         return dt.getFullYear() +
+        //             '-' + Utility.pad(dt.getMonth() + 1) +
+        //             '-' + Utility.pad(dt.getDate()) +
+        //             'T' + Utility.pad(dt.getHours()) +
+        //             ':' + Utility.pad(dt.getMinutes()) +
+        //             ':' + Utility.pad(dt.getSeconds()) +
+        //             'Z';
+        //     },
+        // };
         values[FieldNames.FieldScanModified] = dateToFormString(document.scanDate);
     } else {
         values[FieldNames.FieldScanModified] = '';//dateToFormString(document.scanDate)
@@ -163,6 +183,7 @@ export async function initializeExecutiveDocs(
             .View()
             .Query()
             .Where().LookupField(FieldNames.FieldJobType).ValueAsText().IsNull()
+            .And().BooleanField(FieldNames.FieldObligatory).IsTrue()
             .OrderBy(FieldNames.FieldTitle)
             .ToString();
 
@@ -331,13 +352,13 @@ function listItemToFileData(item: SP.ListItem): FileData {
     const name = values[FieldNames.FieldFileLeafRef] as string;
     const dir = values[FieldNames.FieldFileDirRef] as string;
     const created = values[FieldNames.FieldCreated] as Date;
-    const modified = values[FieldNames.FieldCreated] as Date;
+    const modDate = values[FieldNames.FieldCreated] as Date;
     const size = values[FieldNames.FieldFileSize] as number;
     return {
         url: `${dir}/${name}`,
         name,
         created,
-        modified,
+        modified: modDate ? new Date(modDate.toISOString()) : new Date(),
         size,
     };
 }

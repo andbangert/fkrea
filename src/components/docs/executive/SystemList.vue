@@ -20,7 +20,7 @@
     </div>
     <div class="one" v-for="(jobType, index) in project.jobTypes" :key="jobType.LookupId">
       <div class="title" @click="showClick(index)" :class="active(index)">
-        <h2>{{index+1}}.&nbsp;{{ jobType.LookupValue }}</h2>
+        <h2>{{ jobType.LookupValue }}</h2>
         <h2>{{docCount(jobType.LookupId)}}</h2>
         <h2>{{docsWithScanCount(jobType.LookupId)}}</h2>
         <h2>{{requiredCount(jobType.LookupId)}}&nbsp;из&nbsp;{{docCount(jobType.LookupId)}}</h2>

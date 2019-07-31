@@ -99,13 +99,15 @@ export const actions: ActionTree<RootState, RootState> = {
         const date = payload.archived ? new Date() : null;
         const values: FieldValueCollection = {
             [FieldNames.FieldExecutiveDocsArchived]: payload.archived,
-            [FieldNames.FieldExecutiveDocsArchivedDate]: date ? util.dateToFormString(date) : '',
+            [FieldNames.FieldExecutiveDocsArchivedDate]: (date ? util.dateToFormString(date) : ''),
         };
-        await util.createOrUpdateItem(
+        console.log(values);
+        const item = await util.createOrUpdateItem(
             state.projectSiteSettings.siteUrl,
             state.projectSiteSettings.projectListId,
             state.project.id,
             values);
+        console.log(item);
         commit(mutations.SET_EXEC_DOCS_ARCHIVED, {
             archived: payload.archived,
             date: date
@@ -131,11 +133,11 @@ export const actions: ActionTree<RootState, RootState> = {
             [FieldNames.FieldExecutiveDocsReadyToArchiveDate]: date ? util.dateToFormString(date) : '',
         };
 
-        await util.createOrUpdateItem(
+        const item = await util.createOrUpdateItem(
             state.projectSiteSettings.siteUrl,
             state.projectSiteSettings.projectListId,
             state.project.id, values);
-
+        console.log(item);
         commit(mutations.SET_EXEC_DOCS_ARCHIVE_READY, {
             archived: payload.archived,
             date: date,
