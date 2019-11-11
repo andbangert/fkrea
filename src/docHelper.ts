@@ -15,6 +15,7 @@ import {
     createBatchItems,
     dateToFormString
 } from '@/utilities';
+import { stringify } from 'querystring';
 
 function getExecDocAsFields(document: ExecutiveDocument): FieldValueCollection {
     console.log(document.scanDate);
@@ -256,7 +257,7 @@ export async function getExecutiveDocTypes(siteUrl: string, listId: string, jobT
             .Query()
             .Where()
             .LookupField(FieldNames.FieldJobType).Id().In(arr)
-            .OrderBy(FieldNames.FieldTitle)
+            .OrderBy(FieldNames.FieldSortOrder)
             .ToString();
         const vals = await getItemsByQuery(siteUrl, listId, caml);
         if (vals && vals.data && vals.data.length > 0) {
@@ -270,7 +271,7 @@ export async function getExecutiveDocTypes(siteUrl: string, listId: string, jobT
             .Query()
             .Where()
             .LookupField(FieldNames.FieldJobType).ValueAsText().IsNull()
-            .OrderBy(FieldNames.FieldTitle)
+            .OrderBy(FieldNames.FieldSortOrder)
             .ToString();
         const vals = await getItemsByQuery(siteUrl, listId, camlCommon);
         if (vals && vals.data && vals.data.length > 0) {
@@ -278,12 +279,44 @@ export async function getExecutiveDocTypes(siteUrl: string, listId: string, jobT
         }
     }
     if (items.length > 0) {
+        const etypes =new Array<{
+                LookupId: number,
+                LookupValue: string,
+                required?: boolean,
+                sortOrder?: number,
+            }>();
         items.forEach((item) => {
-            types.push({
-                LookupId: item.get_id(),
-                LookupValue: item.get_item(FieldNames.FieldTitle)
+            const itemId = item.get_id();
+            const itemValues = item.get_fieldValues();
+            const itemTitle = item.get_item(FieldNames.FieldTitle);
+            const required = itemValues[FieldNames.FieldObligatory] as boolean;
+            const orderNumber = itemValues[FieldNames.FieldSortOrder] as number;
+            etypes.push({
+                LookupId: itemId,
+                LookupValue: itemTitle,
+                required,
+                sortOrder: orderNumber ? orderNumber : -1,
             });
         });
+        types.push(...etypes.sort((a, b) => {
+            const an: number = a.sortOrder ? a.sortOrder : -1;
+            const bn: number = b.sortOrder ? b.sortOrder : -1;
+            if (an > bn) {
+                return 1;
+            }
+            if (an < bn) {
+                return -1;
+            }
+            if (an === bn) {
+                return 0;
+            }
+            return -1;
+        }));
+        // types.push({
+        //     LookupId: item.get_id(),
+        //     LookupValue: item.get_item(FieldNames.FieldTitle),
+        //     required: required,
+        // });
     }
     return types;
 }

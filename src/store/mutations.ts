@@ -4,6 +4,7 @@ import {
     ArchiveSiteSettings,
     Project,
     StorageAddressSettings,
+    ExpertDocsQueue,
 } from '@/types';
 
 import mt from './mutation-types';
@@ -28,11 +29,11 @@ export const mutations = {
     },
     [mt.SET_PROJECT](state: RootState, project: Project) {
         Vue.set(state, 'project', project);
-        //state.project = project;
+        // state.project = project;
     },
     [mt.SET_EXEC_DOCS_ARCHIVED](state: RootState, payload: {
         archived: boolean,
-        date?: Date | null
+        date?: Date | null,
     }) {
         if (state.project) {
             state.project.executiveDocsArchived = payload.archived;
@@ -41,19 +42,17 @@ export const mutations = {
     },
     [mt.SET_EXEC_DOCS_ARCHIVE_READY](state: RootState, payload: {
         archived: boolean,
-        date: Date
+        date: Date,
     }) {
         if (state.project) {
             state.project.executiveDocsReadyToArchive = payload.archived;
             state.project.executiveDocsReadyToArchiveDate = payload.date;
         }
     },
-    [mt.INIT_STORE](state: RootState) {
-        if (state.project) {
-            const storeStr = localStorage.getItem('store_' + state.project.id);
-            if (storeStr) {
-                store.replaceState(Object.assign(state, JSON.parse(storeStr)));
-            }
+    [mt.INIT_STORE](state: RootState, projectId: number) {
+        const storeStr = localStorage.getItem('store_' + projectId);
+        if (storeStr) {
+            store.replaceState(Object.assign(state, JSON.parse(storeStr)));
         }
-    }
+    },
 };

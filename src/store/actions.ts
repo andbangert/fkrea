@@ -6,6 +6,7 @@ import {
     ArchiveSiteSettings,
     StorageAddressSettings,
     FieldValueCollection,
+    ExpertDocsQueue,
 } from '@/types';
 
 import * as util from '@/utilities';
@@ -28,8 +29,17 @@ export const actions: ActionTree<RootState, RootState> = {
     async [types.LOAD_PROJECT]({ commit, dispatch, state }, payload: {
         siteUrl: string,
         listId: string,
-        itemId: number
+        itemId: number,
     }) {
+        if (!state.projectSiteSettings) {
+            throw new Error('rootState.projectSiteSettings should be set.');
+        }
+        if (!state.projectSiteSettings.serverRelativeUrl) {
+            throw new Error('rootState.projectSiteSettings.serverRelativeUrl should be set.');
+        }
+        if (!state.projectSiteSettings.projectDocsfolderUrl) {
+            throw new Error('rootState.projectSiteSettings.projectDocsfolderUrl should be set.');
+        }
         // Set Project To State
         const item = await util.getItemById(payload.siteUrl, payload.listId, payload.itemId);
         // Convert to project
@@ -45,13 +55,21 @@ export const actions: ActionTree<RootState, RootState> = {
         const title = fldValues[FieldNames.FieldTitle] as string;
         const contrStr = fldValues[FieldNames.FieldContracts] as string;
         const contracts = util.parseMultiLookupValue(contrStr);
+        const desContrStr = fldValues['DesignerContracts'] as string;
+        const designerContracts = util.parseMultiLookupValue(desContrStr);
+        const designer = fldValues[FieldNames.FieldDesigner] as SP.FieldLookupValue[];
         const boLv = fldValues[FieldNames.FieldBuildObj] as SP.FieldLookupValue[];
         const bldrLv = fldValues[FieldNames.FieldContractor] as SP.FieldLookupValue[];
         const jobTypesLv = fldValues[FieldNames.FieldTypeOfJobs] as SP.FieldLookupValue[];
-        const executiveDocsArchived = fldValues[FieldNames.FieldExecutiveDocsReadyToArchive] as boolean;
-        const executiveDocsReadyToArchive = fldValues[FieldNames.FieldExecutiveDocsArchived] as boolean;
+        const executiveDocsArchived = fldValues[FieldNames.FieldExecutiveDocsArchived] as boolean;
+        const executiveDocsReadyToArchive = fldValues[FieldNames.FieldExecutiveDocsReadyToArchive] as boolean;
         const executiveDocsArchivedDate = fldValues[FieldNames.FieldExecutiveDocsArchivedDate] as Date;
         const executiveDocsReadyToArchiveDate = fldValues[FieldNames.FieldExecutiveDocsReadyToArchiveDate] as Date;
+        const projectPathFolder = fldValues[FieldNames.Path] as string;
+
+        // ${state.projectSiteSettings.serverRelativeUrl}
+        let folderUrl = `${state.projectSiteSettings.projectDocsfolderUrl}/${projectPathFolder}`;
+        folderUrl = folderUrl.trimEnd();
         const project: Project = {
             id,
             title,
@@ -60,7 +78,19 @@ export const actions: ActionTree<RootState, RootState> = {
             executiveDocsReadyToArchive,
             executiveDocsArchivedDate,
             executiveDocsReadyToArchiveDate,
+            projectPathFolder: folderUrl,
+            designerContracts,
         };
+
+        // console.log('project');
+        // console.log(project);
+
+        if (designer) {
+            const desArr = util.convertToSelectLookup(designer);
+            if (designer && designer.length > 0) {
+                project.designer = desArr;// = boArr[0];
+            }
+        }
         if (boLv) {
             const boArr = util.convertToSelectLookup(boLv);
             if (boArr && boArr.length > 0) {
@@ -77,7 +107,29 @@ export const actions: ActionTree<RootState, RootState> = {
             const jobTypes = [{ LookupId: 0, LookupValue: 'Общие документы' }];
             const jtC = util.convertToSelectLookup(jobTypesLv);
             if (jtC && jtC.length > 0) {
-                jobTypes.push(...jtC);
+                jtC.forEach((j) => {
+                    const strArr = j.LookupValue.split('.');
+                    if (strArr.length > 0) {
+                        const strNum = Number(strArr[0]);
+                        if (!isNaN(strNum)) {
+                            j.sortOrder = strNum;
+                        }
+                    }
+                });
+                jobTypes.push(...jtC.sort((a, b) => {
+                    const an: number = a.sortOrder ? a.sortOrder : -1;
+                    const bn: number = b.sortOrder ? b.sortOrder : -1;
+                    if (an > bn) {
+                        return 1;
+                    }
+                    if (an < bn) {
+                        return -1;
+                    }
+                    if (an === bn) {
+                        return 0;
+                    }
+                    return -1;
+                }));
             }
             project.jobTypes = jobTypes;
         }
@@ -101,18 +153,17 @@ export const actions: ActionTree<RootState, RootState> = {
             [FieldNames.FieldExecutiveDocsArchived]: payload.archived,
             [FieldNames.FieldExecutiveDocsArchivedDate]: (date ? util.dateToFormString(date) : ''),
         };
-        console.log(values);
+        // console.log(values);
         const item = await util.createOrUpdateItem(
             state.projectSiteSettings.siteUrl,
             state.projectSiteSettings.projectListId,
             state.project.id,
             values);
-        console.log(item);
+        // console.log(item);
         commit(mutations.SET_EXEC_DOCS_ARCHIVED, {
             archived: payload.archived,
-            date: date
-        })
-
+            date
+        });
     },
     async [types.SET_EXEC_DOCS_ARCHIVE_READY]({ commit, dispatch, state }, payload: {
         archived: boolean,
@@ -137,10 +188,10 @@ export const actions: ActionTree<RootState, RootState> = {
             state.projectSiteSettings.siteUrl,
             state.projectSiteSettings.projectListId,
             state.project.id, values);
-        console.log(item);
+        // console.log(item);
         commit(mutations.SET_EXEC_DOCS_ARCHIVE_READY, {
             archived: payload.archived,
-            date: date,
-        })
+            date,
+        });
     },
 };

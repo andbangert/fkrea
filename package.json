@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "tsc sharepoint/project-new.ts & vue-cli-service build",
+    "build": "tsc sharepoint/project-view.ts & vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

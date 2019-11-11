@@ -14,7 +14,7 @@
       <h2>{{systemCount}}</h2>
       <h2>{{documentCount}}</h2>
       <h2>{{documentCountWithScan}}</h2>
-      <h2>{{requiredDocumentCount}}&nbsp;из&nbsp;{{documentCount}}</h2>
+      <h2>{{requiredDocumentWithBarcodeCount}}&nbsp;из&nbsp;{{requiredDocumentCount}}</h2>
       <h2>{{remarksCount}}</h2>
       <h2></h2>
     </div>
@@ -23,7 +23,7 @@
         <h2>{{ jobType.LookupValue }}</h2>
         <h2>{{docCount(jobType.LookupId)}}</h2>
         <h2>{{docsWithScanCount(jobType.LookupId)}}</h2>
-        <h2>{{requiredCount(jobType.LookupId)}}&nbsp;из&nbsp;{{docCount(jobType.LookupId)}}</h2>
+        <h2>{{requiredCountWithBarcode(jobType.LookupId)}}&nbsp;из&nbsp;{{requiredCount(jobType.LookupId)}}</h2>
         <h2>{{docsRemarkedCount(jobType.LookupId)}}</h2>
         <h2>
           <span>
@@ -43,12 +43,9 @@
         </h2>
       </div>
       <transition name="slide">
-        <doc-list
-          v-if="show(index)"
-          v-bind:docs="getDocsBySystemId(jobType.LookupId)"
-          v-bind:jobTypeId="jobType.LookupId"
-        ></doc-list>
+        <doc-list v-if="show(index)" v-bind:jobTypeId="jobType.LookupId"></doc-list>
       </transition>
+      <!-- v-bind:docs="getDocsBySystemId(jobType.LookupId)" -->
     </div>
   </div>
 </template>
@@ -85,7 +82,8 @@ const store = storeExec.state as ExecutiveDocsState;
       "requiredDocumentCount",
       "documentCountWithScan",
       "remarksCount",
-      "groupedDocs"
+      "groupedDocs",
+      "requiredDocumentWithBarcodeCount"
     ])
   }
 })
@@ -100,6 +98,7 @@ export default class SystemList extends Vue {
   private requiredDocumentCount!: Computed;
   private documentCountWithScan!: Computed;
   private remarksCount!: Computed;
+  private requiredDocumentWithBarcodeCount!: Computed;
 
   // Getters/Setters
   get systemCount() {
@@ -129,12 +128,28 @@ export default class SystemList extends Vue {
   }
   private docCount(systemId: number) {
     const docs = this.docs[systemId];
-    return docs ? docs.length : 0;
+    //return docs ? docs.length : 0;
+    if (docs) {
+      const filter = docs.filter(
+        doc => doc.barCode && doc.barCode !== ""
+      );
+      return filter ? filter.length : 0;
+    }
+  }
+  private requiredCountWithBarcode(systemId: number) {
+    const docs = this.docs[systemId];
+    if (docs) {
+      const filter = docs.filter(
+        doc => doc.barCode && doc.barCode !== "" && doc.required
+      );
+      return filter ? filter.length : 0;
+    }
+    return 0;
   }
   private requiredCount(systemId: number) {
     const docs = this.docs[systemId];
     if (docs) {
-      const filter = docs.filter(doc => doc.barCode && doc.barCode !== "");
+      const filter = docs.filter(doc => doc.required);
       return filter ? filter.length : 0;
     }
     return 0;
@@ -172,7 +187,8 @@ export default class SystemList extends Vue {
       });
     }
   }
-  mounted() {}
+  mounted() {
+  }
 }
 </script>
 

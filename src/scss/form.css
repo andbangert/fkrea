@@ -282,12 +282,12 @@ ul.fkr-menu-links li a {
     padding-bottom: 14px;
 }
 
-input {
+/* input {
     border       : 1px solid #2086BF;
     box-sizing   : border-box;
     border-radius: 4px;
     height       : 24px;
-}
+} */
 
 .db-container {
     width        : 100%;
@@ -308,12 +308,12 @@ input {
 }
 
 /* FORMS */
-input {
+/* input {
     border       : 1px solid #2086BF;
     box-sizing   : border-box;
     border-radius: 4px;
     height       : 24px;
-}
+} */
 
 .fkr-form-group {
     display: block;

@@ -1,15 +1,16 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=roboto:100,300,400,500,700,900&display=swap');
 
 .clearfix {
     clear: both;
 }
 
 body {
-    background: #D8D8D8;
+    /* background: #D8D8D8; */
+    background   : #bbe2f9 !important;
 }
 
 body * {
-    font-family  : 'Roboto', sans-serif;
+    font-family  : 'roboto', sans-serif;
     /* box-sizing: border-box; */
 }
 
@@ -21,7 +22,7 @@ body * {
 
 .wrapper_big .wrapper {
     box-sizing: border-box;
-    width     : 1100px;
+    width     : 1150px;
     /* float  : right; */
 }
 
@@ -69,7 +70,7 @@ header .tabs .active {
 }
 
 .top {
-    padding: 35px 0 30px 0;
+    padding: 10px 0 10px 0;
 }
 
 .top h2 {
@@ -699,13 +700,13 @@ div.wrapper>footer>a:visited {
 }
 
 .popup form .fields span {
-    font-weight: normal;
-    font-size  : 18px;
-    line-height: 18px;
-    color      : #313131;
-    display    : block;
+    font-weight   : normal;
+    font-size     : 18px;
+    line-height   : 18px;
+    color         : #313131;
+    display       : block;
     /* padding    : 0 0 40px 20px; */
-    width      : 100%;
+    width         : 100%;
 }
 
 .popup form input[type="submit"] {
@@ -727,7 +728,7 @@ div.wrapper>footer>a:visited {
     cursor       : pointer;
     border-radius: 3px;
     margin-left  : 45px;
-    margin-top: 30px;
+    margin-top   : 30px;
 }
 
 .popup form .out {
@@ -744,5 +745,474 @@ div.wrapper>footer>a:visited {
     padding      : 9px 0 0 0;
     cursor       : pointer;
     border-radius: 3px;
-    margin-top: 30px;
+    margin-top   : 30px;
+}
+
+.button-section .run {
+    float        : right;
+    width        : 161px;
+    height       : 24px;
+    font-weight  : bold;
+    font-size    : 14px;
+    line-height  : 16px;
+    text-align   : center;
+    background   : #2086BF;
+    color        : #FFFFFF;
+    border       : 1px solid #2086BF;
+    padding      : 9px 0 0 0;
+    cursor       : pointer;
+    border-radius: 3px;
+    margin-left  : 45px;
+    margin-top   : 30px;
+}
+
+.button-section .out {
+    float        : right;
+    width        : 161px;
+    height       : 24px;
+    font-weight  : bold;
+    font-size    : 14px;
+    line-height  : 16px;
+    text-align   : center;
+    background   : transparent;
+    color        : #2086BF;
+    border       : 1px solid #2086BF;
+    padding      : 9px 0 0 0;
+    cursor       : pointer;
+    border-radius: 3px;
+    margin-top   : 30px;
+}
+
+.fkr-table {
+    width: 100%;
+}
+
+.fkr-table tbody tr td,
+.fkr-table tbody tr th {
+    text-align: left;
+}
+
+.fkr-table-header-row {
+    background: #F4F7FB;
+    border    : 1px solid #DFE3E6;
+}
+
+.fkr-table-header-row th,
+.fkr-table-header-row td {
+    font-family: roboto;
+    font-style : normal;
+    font-weight: 500;
+    font-size  : 14px;
+    line-height: 14px;
+    color      : #152935;
+}
+
+
+/* PROJECT EXPERTISE STYLES */
+.fkr-inline-pane {
+    /* FieldName */
+    font-family: roboto;
+    font-style : normal;
+    font-weight: 500;
+    font-size  : 18px;
+    line-height: 21px;
+    align-items: center;
+    width      : 1150px;
+    position   : relative;
+    display    : flex;
+}
+
+.fkr-expert-pane {
+    width  : 680px;
+    display: flex;
+}
+
+.fkr-expert-pane * {
+    margin-left  : auto;
+    margin-top   : auto;
+    margin-bottom: auto;
+}
+
+.fkr-expert-pane h2 {
+    margin: auto 0;
+}
+
+.fkr-expert-pane .fkr-input {
+    border       : none;
+    height       : 40px;
+    border-bottom: 1px solid #5a6872;
+    font-style   : normal;
+    font-weight  : 300;
+    font-size    : 18px;
+    line-height  : 21px;
+    color        : #313131;
+    background   : #f4f7fb !important;
+}
+
+.fkr-expert-pane input {
+    width: 208px;
+}
+
+.fkr-status-pane {
+    display: flex;
+    width  : 470px;
+}
+
+.fkr-status-pane * {
+    margin-left  : auto;
+    margin-top   : auto;
+    margin-bottom: auto;
+}
+
+.fkr-button {
+    box-shadow   : 0px 2px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    font-style   : normal;
+    font-weight  : normal;
+    font-size    : 14px;
+    line-height  : 16px;
+    align-items  : center;
+    text-align   : center;
+    height       : 40px;
+    width        : 210px;
+    background   : #FFFFFF;
+    border       : 1px solid #2086BF;
+    color        : #2086BF;
+}
+
+.fkr-button-blue {
+    box-shadow      : 0px 2px 4px rgba(0, 0, 0, 0.25);
+    border-radius   : 4px;
+    font-style      : normal;
+    font-weight     : normal;
+    font-size       : 14px;
+    line-height     : 16px;
+    align-items     : center;
+    text-align      : center;
+    height          : 40px;
+    width           : 210px;
+    background      : #2086BF;
+    /* border       : 1px solid #2086BF; */
+    color           : #FFFFFF;
+}
+
+.fkr-button-blue:hover {
+    box-shadow      : 0px 2px 4px rgba(0, 0, 0, 0.25);
+    border-radius   : 4px;
+    font-style      : normal;
+    font-weight     : normal;
+    font-size       : 14px;
+    line-height     : 16px;
+    align-items     : center;
+    text-align      : center;
+    height          : 40px;
+    width           : 210px;
+    background      : #0067a0;
+    /* border       : 1px solid #2086BF; */
+    color           : #FFFFFF;
+}
+
+.fkr-button.disabled {
+    border: 1px solid #A3A3A3;
+    color : #A3A3A3;
+}
+
+.fkr-status-box {
+    display     : flex;
+    position    : relative;
+    width       : 400px;
+    height      : 40px;
+    font-style  : normal;
+    font-weight : 500;
+    font-size   : 14px;
+    line-height : 18px;
+    align-items : center;
+    color       : #152934;
+    padding-left: 40px;
+}
+
+.fkr-status-box.failed {
+    border             : 1px solid #BD1427;
+    border-left        : 5px solid #BD1427;
+    background         : url("./img/error.png") no-repeat;
+    background-size    : unset;
+    background-position: left 10px center;
+}
+
+.fkr-status-box.success {
+    border             : 1px solid #219653;
+    border-left        : 5px solid #219653;
+    background         : url("./img/checkmark.png") no-repeat;
+    background-size    : unset;
+    background-position: left 10px center;
+}
+
+.fkr-status-box.inprogress {
+    border             : 1px solid #26A1E6;
+    border-left        : 5px solid #26A1E6;
+    background         : url("./img/Combined Shape.png") no-repeat;
+    background-size    : unset;
+    background-position: left 10px center;
+}
+
+.fkr-title {
+    font-family: roboto;
+    font-style : normal;
+    font-weight: 500;
+    font-size  : 18px;
+    line-height: 21px;
+    align-items: center;
+    color      : #6D6D6D;
+}
+
+.fkr-checkmark {
+    background     : url("./img/checkmark.png") no-repeat;
+    width          : 20px;
+    height         : 20px;
+    background-size: contain;
+    margin         : auto;
+    cursor         : pointer;
+    display        : block;
+    margin         : 4px 0 0 0;
+}
+
+.fkr-table {
+    font-style    : normal;
+    color         : #152935;
+    border-spacing: 0;
+    background    : #FFFFFF;
+    border        : 1px solid #DFE3E6;
+    width         : 1148px;
+}
+
+.fkr-table .header-row {
+    background: #F4F7FB;
+    border    : 1px solid #DFE3E6;
+    box-sizing: border-box;
+}
+
+.fkr-table .footer-row {
+    background: #F3F3F3;
+}
+
+.fkr-table tr.header-row th {
+    text-align    : left;
+    padding-top   : 16px;
+    padding-bottom: 16px;
+    font-style    : normal;
+    font-weight   : 600;
+    font-size     : 14px;
+    line-height   : 14px;
+}
+
+.fkr-table tr td {
+    padding-top   : 20px;
+    padding-bottom: 20px;
+    padding-right : 8px;
+    font-style    : normal;
+    font-weight   : normal;
+    font-size     : 14px;
+    line-height   : 18px;
+    text-align    : left;
+    border-bottom : 1px solid #DFE3E6;
+}
+
+.fkr-table tr.footer-row td {
+    padding-top   : 10px;
+    padding-bottom: 10px;
+    font-style    : normal;
+    font-weight   : normal;
+    font-size     : 12px;
+    line-height   : 18px;
+    color         : #5A6872;
+}
+
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(1) {
+    width     : 40px;
+    text-align: center;
+}
+
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(2) {
+    width: 316px;
+}
+
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(3) {
+    width: 224px;
+}
+
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(4) {
+    width: 192px;
+}
+
+table.fkr-table.fkr-proj-docs>thead>tr>th:nth-child(5),
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(5) {
+    width: 70px;
+}
+
+table.fkr-table.fkr-proj-docs>thead>tr>th:nth-child(5),
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(5) {
+    text-align: center;
+    width     : 80px;
+}
+
+table.fkr-table.fkr-proj-docs>thead>tr>th:nth-child(7),
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(7) {
+    text-align      : right;
+    /* padding-right: 40px; */
+}
+
+table.fkr-table.fkr-proj-docs>thead>tr>th:nth-child(8),
+table.fkr-table.fkr-proj-docs>tbody>tr>td:nth-child(8) {
+    width         : 75px;
+    text-align    : center;
+    padding-top   : 0px !important;
+    padding-bottom: 0px !important;
+}
+
+table.fkr-table .fkr-file-icon {
+    width : 22px;
+    height: 26px;
+}
+
+.fkr-commands .fkr-delete {
+    display            : inline-block;
+    background         : url("./img/Del.png") no-repeat;
+    background-position: left center top center;
+    width              : 20px;
+    height             : 20px;
+    margin             : auto;
+    margin             : 4px 0 0 0;
+}
+
+.fkr-commands .fkr-save {
+    display            : inline-block;
+    background         : url("./img/Save.png") no-repeat;
+    background-position: left center top center;
+    width              : 20px;
+    height             : 20px;
+    margin             : auto;
+    margin             : 4px 0 0 0;
+}
+
+.fkr-commands .fkr-cancel {
+    display            : inline-block;
+    background         : url("./img/Cancel.png") no-repeat;
+    background-position: left center top center;
+    width              : 20px;
+    height             : 16px;
+    margin             : auto;
+    margin             : 4px 0 0 0;
+}
+
+.fkr-commands .fkr-edit {
+    display            : inline-block;
+    background         : url("./img/Edit.png") no-repeat;
+    background-position: left center top center;
+    width              : 20px;
+    height             : 20px;
+    margin             : auto;
+    margin             : 4px 0 0 0;
+}
+
+
+.fkr-pager {
+    width          : 120px;
+    border-collapse: collapse;
+    float          : right;
+}
+
+.fkr-pager td {
+    text-align : center !important;
+    border-left: 1px solid #A3A3A3;
+}
+
+.fkr-pager.fkr-pager-btn {
+    width: 42px;
+}
+
+.fkr-pager.fkr-pager-btn a {
+    display: inline-block;
+    width  : 100%;
+}
+
+.fkr-pager.fkr-pager-size {
+    text-align: center;
+}
+
+.fkr-table.footer-row td {
+    padding: 0px !important;
+}
+
+table.fkr-table>tfoot>tr>td:nth-child(3) {
+    padding-bottom: 0px !important;
+    padding-top   : 0px !important;
+}
+
+.fkr-group-justified {
+    display        : table;
+    width          : 100%;
+    table-layout   : fixed;
+    border-collapse: separate;
+}
+
+.fkr-group-justified>.fkr-btn-group {
+    display: table-cell;
+    float  : none;
+    width  : 1%;
+}
+
+.fkr-btn-group>.fkr-btn {
+    float      : left;
+    margin-left: 0px !important;
+}
+
+.fkr-btn-group>.fkr-btn:first-child:not(:last-child) {
+    border-top-right-radius   : 0;
+    border-bottom-right-radius: 0;
+}
+
+.fkr-btn-group>.fkr-btn:last-child:not(:first-child) {
+    border-top-left-radius   : 0;
+    border-bottom-left-radius: 0;
+}
+
+.fkr-btn-primary {
+    color           : #2086BF;
+    background-color: #FFFFFF;
+    border-color    : #2086BF;
+    border          : 1px solid #2086BF;
+}
+
+.fkr-btn {
+    display            : inline-block;
+    margin-bottom      : 0;
+    font-weight        : 400;
+    text-align         : center;
+    white-space        : nowrap;
+    vertical-align     : middle;
+    cursor             : pointer;
+    background-image   : none;
+    /* border          : 1px solid transparent; */
+    padding            : 6px 12px;
+    font-size          : 14px;
+    font-style         : normal;
+    font-weight        : normal;
+    line-height        : 16px;
+    border-radius      : 4px;
+    -webkit-user-select: none;
+    -moz-user-select   : none;
+    -ms-user-select    : none;
+    user-select        : none;
+    height             : 32px;
+}
+
+.fkr-btn-primary.active {
+    color           : #FFF;
+    background-color: #2086BF;
+    border          : 1px solid #2086BF;
+}
+
+.fkr-action-pane {
+    width  : 100%;
+    display: table;
 }

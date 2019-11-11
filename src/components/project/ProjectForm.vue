@@ -337,6 +337,7 @@ export default class ProjectForm extends Vue {
     if (this.mode === FormMode.New) {
       // Create folders
       const path = this.titleField.value;
+
       if (!path) {
         this.helper.notifyOnError(
           "Ошибка сохранения",
@@ -344,11 +345,12 @@ export default class ProjectForm extends Vue {
         );
         return false;
       }
+
       const that = this;
       this.helper.createFolder(
         this.siteUrl,
         this.scanLibId,
-        path,
+        path.trimEnd(),
         (folder: SP.Folder | null, exists, msg) => {
           if (exists && folder !== null) {
             that.helper.notifyOnError(
@@ -450,7 +452,7 @@ export default class ProjectForm extends Vue {
         if (dialogResult === SP.UI.DialogResult.OK) {
           let rurl = GetUrlKeyValue("source");
           const webUrl = this.siteUrl;
-          const page = "Lists/Projects/DispFormTabsV1.aspx";
+          const page = "Lists/Projects/DispForm.aspx";
           const url = `${webUrl}/${page}?ID=${projectId}&returnUrl=${rurl}`;
           STSNavigate(url);
         } else {

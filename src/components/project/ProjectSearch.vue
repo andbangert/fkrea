@@ -9,8 +9,24 @@
         :siteUrl="siteUrl"
         :listId="projectList"
         :buildObjectListId="buildObjectList"
-        :contractorListId="projectList"
+        :contractorListId="contractorList"
         :items="projects"
+        :contractListId="contractListId"
+        :contractSiteUrl="contractSiteUrl"
+      ></ProjectList>
+    </div>
+    <br />
+    <div class="fkr-search-label">Последние</div>
+    <br />
+    <div>
+      <ProjectList
+        :siteUrl="siteUrl"
+        :listId="projectList"
+        :buildObjectListId="buildObjectList"
+        :contractorListId="contractorList"
+        :items="lastProjects"
+        :contractListId="contractListId"
+        :contractSiteUrl="contractSiteUrl"
       ></ProjectList>
     </div>
   </div>
@@ -27,7 +43,7 @@ import {
   ProjectCardSettings,
   FormFieldText,
   FormMode,
-  ProjectItem,
+  ProjectItem
 } from "../../types";
 
 import vSelect from "vue-select";
@@ -46,22 +62,43 @@ export default class ProjectSearch extends Vue {
   @Prop() buildObjectList!: string;
   @Prop() contractorList!: string;
   @Prop() projectList!: string;
+  @Prop() contractListId!: string;
+  @Prop() contractSiteUrl!: string;
 
   private projectsData: ProjectItem[] = new Array<ProjectItem>();
+  private lastProjectsData: ProjectItem[] = new Array<ProjectItem>();
+
   get projects() {
-      console.log('on render');
     return this.projectsData;
+  }
+
+  get lastProjects() {
+    return this.lastProjectsData;
+  }
+
+  async loadLastProject() {
+    try {
+      const result = await ProjectFormHelper.getMyLastModifiedProjects(
+        this.siteUrl,
+        this.projectList
+      );
+      this.lastProjectsData = result;
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   mounted() {
     const optSettings = this.$refs.select as VueSelectOptions;
     this.initializeBuilObject(optSettings);
+    this.loadLastProject();
   }
 
   initializeBuilObject(select: VueSelectOptions) {
     const that = this;
     select.filterable = false;
-    select.placeholder = 'Введите адрес объекта для поиска комплектов. Минимум 3 символа';
+    select.placeholder =
+      "Введите адрес объекта для поиска комплектов. Минимум 3 символа";
     select.onSearch = async function(
       queryText: string,
       loading: (val: boolean) => void
@@ -75,7 +112,7 @@ export default class ProjectSearch extends Vue {
         this.options = await that.SearchBuildObject(
           queryText,
           that.buildObjectList,
-          loading,
+          loading
         );
       } finally {
         loading(false);
@@ -92,7 +129,7 @@ export default class ProjectSearch extends Vue {
           const result = await ProjectFormHelper.getProjectsByBuildObject(
             this.siteUrl,
             this.projectList,
-            bosr.LookupId,
+            bosr.LookupId
           );
           that.projectsData = result;
         } catch (e) {
@@ -110,8 +147,8 @@ export default class ProjectSearch extends Vue {
     let values: SelectLookupValue[] = new Array<SelectLookupValue>();
     try {
       const objr = await utils.SearchListObject(queryText, listId, 100, [
-        'ListItemID',
-        'Title',
+        "ListItemID",
+        "Title"
       ]);
       const results = objr as SP.JsonObjectResult;
       if (results) {
@@ -124,10 +161,10 @@ export default class ProjectSearch extends Vue {
           loading(false);
           return values;
         }
-        values = result.ResultTables[0].ResultRows.map((r) => {
+        values = result.ResultTables[0].ResultRows.map(r => {
           return {
             LookupId: r.ListItemID,
-            LookupValue: r.Title,
+            LookupValue: r.Title
           };
         });
       }
@@ -138,3 +175,8 @@ export default class ProjectSearch extends Vue {
   }
 }
 </script>
+<style scoped>
+.fkr-search-label {
+  font-weight: bold;
+}
+</style>

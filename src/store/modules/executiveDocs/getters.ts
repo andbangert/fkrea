@@ -4,18 +4,17 @@ import {
     ExecutiveDocsState,
     ExecutiveDocument,
     RootState,
-    IndexedExecDocs
+    IndexedExecDocs,
 } from '@/types';
 
-export const getters: GetterTree<ExecutiveDocsState, RootState> = {
+export const getrs: GetterTree<ExecutiveDocsState, RootState> = {
     groupedDocs(state): IndexedExecDocs {
         const jobTypeIds = new Array<number>();
         const grouped = state.documents.reduce((rv: IndexedExecDocs, x: ExecutiveDocument) => {
             let jobType = x.jobTypeId;
             if (!jobType) {
                 jobType = 0;
-            }
-            else {
+            } else {
                 jobTypeIds.push(jobType);
             }
             (rv[jobType] = rv[jobType] || []).push(x);
@@ -28,8 +27,15 @@ export const getters: GetterTree<ExecutiveDocsState, RootState> = {
         if (getters.groupedDocs) {
             const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
-                const index = Number.parseInt(key);
-                count += getters.groupedDocs[index].length;
+                // const index = Number.parseInt(key);
+                // count += getters.groupedDocs[index].length;
+                const index = Number.parseInt(key, undefined);
+                const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
+                const filter = groupedDocs[index].filter((doc) =>
+                    (doc.barCode && doc.barCode !== ''));
+                if (filter) {
+                    count += filter.length;
+                }
             });
             return count;
         }
@@ -37,14 +43,13 @@ export const getters: GetterTree<ExecutiveDocsState, RootState> = {
     },
     documentCountWithScan(state, getters): number {
         let count = 0;
-
         if (getters.groupedDocs) {
             const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
-                const index = Number.parseInt(key);
+                const index = Number.parseInt(key, undefined);
                 const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
                 const filter = groupedDocs[index].filter((doc) =>
-                    (doc.scanLink !== undefined && doc.scanLink !== null && doc.scanLink !== ''))
+                    (doc.scanLink !== undefined && doc.scanLink !== null && doc.scanLink !== ''));
                 if (filter) {
                     count += filter.length;
                 }
@@ -58,9 +63,26 @@ export const getters: GetterTree<ExecutiveDocsState, RootState> = {
         if (getters.groupedDocs) {
             const keys: string[] = Object.keys(getters.groupedDocs);
             keys.forEach((key) => {
-                const index = Number.parseInt(key);
+                const index = Number.parseInt(key, undefined);
                 const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
                 const filter = groupedDocs[index].filter((doc) => doc.required);
+                if (filter) {
+                    count += filter.length;
+                }
+            });
+            return count;
+        }
+        return 0;
+    },
+    requiredDocumentWithBarcodeCount(state, getters): number {
+        let count = 0;
+        if (getters.groupedDocs) {
+            const keys: string[] = Object.keys(getters.groupedDocs);
+            keys.forEach((key) => {
+                const index = Number.parseInt(key, undefined);
+                const groupedDocs: IndexedExecDocs = getters.groupedDocs as IndexedExecDocs;
+                const filter = groupedDocs[index].filter(
+                    (doc) => (doc.required && doc.barCode && doc.barCode !== ''));
                 if (filter) {
                     count += filter.length;
                 }

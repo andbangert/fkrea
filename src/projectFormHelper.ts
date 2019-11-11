@@ -37,8 +37,85 @@ export class ProjectFormHelper {
             .EqualTo(Number(buildObjectId))
             .ToString();
 
-        console.log('utils.getItemsByQuery');
-        console.log(query);
+        const projectsResult = await utils.getItemsByQuery(siteUrl, projectListId, query);
+        const items: ProjectItem[] = new Array<ProjectItem>();
+
+        projectsResult.data.forEach((item) => {
+            const itemVals = item.get_fieldValues();
+            const boval: SP.FieldLookupValue[] = itemVals[proj.FieldBuildObj] as SP.FieldLookupValue[];
+            if (boval && boval.length > 0) {
+                const buildObject: SelectLookupValue = {
+                    LookupId: Number(boval[0].get_lookupId()),
+                    LookupValue: boval[0].get_lookupValue(),
+                };
+                const designerVals: SP.FieldLookupValue[] = itemVals[proj.FieldDesigner] as SP.FieldLookupValue[];
+                let designers: SelectLookupValue[] = new Array<SelectLookupValue>();
+                if (designerVals && designerVals.length > 0) {
+                    designers = designerVals.map((dv) => {
+                        const value: SelectLookupValue = {
+                            LookupId: Number(dv.get_lookupId()),
+                            LookupValue: dv.get_lookupValue(),
+                        };
+                        return value;
+                    });
+                }
+                const builderVals: SP.FieldLookupValue[] = itemVals[proj.FieldBuilder] as SP.FieldLookupValue[];
+                let builders: SelectLookupValue[] = new Array<SelectLookupValue>();
+                if (builderVals && builderVals.length > 0) {
+                    builders = builderVals.map((bv) => {
+                        const value: SelectLookupValue = {
+                            LookupId: Number(bv.get_lookupId()),
+                            LookupValue: bv.get_lookupValue(),
+                        };
+                        return value;
+                    });
+                }
+                const contractValStr: string = itemVals[proj.FieldContracts] as string;
+                let contracts = new Array<SelectLookupValue>();
+                if (contractValStr && contractValStr !== '') {
+                    contracts = utils.parseMultiLookupValue(contractValStr);
+                    const title = item.get_item(proj.FieldTitle) as string;
+                    if (contracts.length > 0) {
+                        contracts.forEach((ctr) => {
+                            items.push({
+                                ID: Number(item.get_item('ID')),
+                                Title: title,
+                                CreatedDate: itemVals['Created'] as Date,
+                                BuildObject: buildObject,
+                                Designer: designers,
+                                Builder: builders,
+                                Contracts: contracts
+                            });
+                        });
+                    }
+                }
+                else {
+                    items.push({
+                        ID: Number(item.get_item('ID')),
+                        Title: item.get_item(proj.FieldTitle) as string,
+                        CreatedDate: itemVals['Created'] as Date,
+                        BuildObject: buildObject,
+                        Designer: designers,
+                        Builder: builders,
+                        Contracts: contracts
+                    });
+                }
+            }
+        });
+        return items;
+    }
+
+    public static async getMyLastModifiedProjects(siteUrl: string, projectListId: string, numberDays?: number) {
+        const date = Date.now();
+        let newDate = new Date(date);
+        newDate.setDate(newDate.getDate() - 10);
+        const query = new CamlBuilder().View().RowLimit(100).Query()
+            .Where()
+            .UserField('Editor')
+            .EqualToCurrentUser()
+            .And()
+            .DateField('Modified').GreaterThanOrEqualTo(newDate)
+            .ToString();
 
         const projectsResult = await utils.getItemsByQuery(siteUrl, projectListId, query);
         const items: ProjectItem[] = new Array<ProjectItem>();
@@ -62,13 +139,47 @@ export class ProjectFormHelper {
                         return value;
                     });
                 }
-                items.push({
-                    ID: Number(item.get_item('ID')),
-                    Title: item.get_item(proj.FieldTitle) as string,
-                    CreatedDate: itemVals['Created'] as Date,
-                    BuildObject: buildObject,
-                    Designer: designers,
-                });
+                const builderVals: SP.FieldLookupValue[] = itemVals[proj.FieldBuilder] as SP.FieldLookupValue[];
+                let builders: SelectLookupValue[] = new Array<SelectLookupValue>();
+                if (builderVals && builderVals.length > 0) {
+                    builders = builderVals.map((bv) => {
+                        const value: SelectLookupValue = {
+                            LookupId: Number(bv.get_lookupId()),
+                            LookupValue: bv.get_lookupValue(),
+                        };
+                        return value;
+                    });
+                }
+                const contractValStr: string = itemVals[proj.FieldContracts] as string;
+                let contracts = new Array<SelectLookupValue>();
+                if (contractValStr && contractValStr !== '') {
+                    contracts = utils.parseMultiLookupValue(contractValStr);
+                    const title = item.get_item(proj.FieldTitle) as string;
+                    if (contracts.length > 0) {
+                        contracts.forEach((ctr) => {
+                            items.push({
+                                ID: Number(item.get_item('ID')),
+                                Title: title,
+                                CreatedDate: itemVals['Created'] as Date,
+                                BuildObject: buildObject,
+                                Designer: designers,
+                                Builder: builders,
+                                Contracts: contracts
+                            });
+                        });
+                    }
+                }
+                else {
+                    items.push({
+                        ID: Number(item.get_item('ID')),
+                        Title: item.get_item(proj.FieldTitle) as string,
+                        CreatedDate: itemVals['Created'] as Date,
+                        BuildObject: buildObject,
+                        Designer: designers,
+                        Builder: builders,
+                        Contracts: contracts
+                    });
+                }
             }
         });
         return items;
@@ -158,7 +269,6 @@ export class ProjectFormHelper {
             }
         }
     }
-
 
     public async customSave(
         siteUrl: string,
@@ -394,6 +504,7 @@ export class ProjectFormHelper {
             .ToString();
         return caml;
     }
+
     private docsByBoIDQuery(extID: number): string {
         // const cb = new CamlBuilder();
         // const query = cb

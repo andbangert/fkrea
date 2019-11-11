@@ -1,7 +1,7 @@
 <template>
   <div class="proj-card-container">
     <span id="part1">
-      <table width="100%" class="ms-formtitle" border="0" cellspacing="0" cellpadding="0">
+      <!-- <table width="100%" class="ms-formtitle" border="0" cellspacing="0" cellpadding="0">
         <tbody>
           <tr>
             <td>
@@ -9,7 +9,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
       <slot name="fields"></slot>
       <slot name="toolbar"></slot>
     </span>

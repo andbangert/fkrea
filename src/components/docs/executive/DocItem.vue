@@ -94,12 +94,14 @@ export default class DocItem extends Vue {
 
   get scanDate() {
     if (this.document && this.document.scanDate) {
-      const date = this.document.scanDate;
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      return `${day < 10 ? "0" + day : day}.${
-        month < 10 ? "0" + month : month
-      }.${date.getFullYear()}`;
+      try {
+        const date = new Date(this.document.scanDate);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return `${day < 10 ? "0" + day : day}.${
+          month < 10 ? "0" + month : month
+        }.${date.getFullYear()}`;
+      } catch (e) {}
     }
   }
 

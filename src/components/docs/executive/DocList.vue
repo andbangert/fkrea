@@ -16,7 +16,8 @@ import {
   ExecutiveDocument,
   ExecutiveDocsState,
   ProjectSiteSettings,
-  SelectLookupValue
+  SelectLookupValue,
+  IndexedExecDocs
 } from "@/types";
 import rootStore from "@/store/store";
 import storeExec from "@/store/modules/executiveDocs/store";
@@ -29,9 +30,9 @@ import {
   ActionMethod,
   Computed,
   mapState,
-  mapActions
+  mapActions,
+  mapGetters
 } from "vuex";
-import { settings } from "cluster";
 
 //const { mapState, mapActions } = createNamespacedHelpers("executiveDocs");
 const nsedocs = "executiveDocs";
@@ -44,6 +45,7 @@ const state = storeExec.state as ExecutiveDocsState;
       project: project => rootStore.state.project,
       settings: settings => rootStore.state.projectSiteSettings
     }),
+    ...mapGetters(nsedocs, ["groupedDocs"])
   },
   methods: {
     ...mapActions(nsedocs, {
@@ -52,22 +54,43 @@ const state = storeExec.state as ExecutiveDocsState;
   }
 })
 export default class DocList extends Vue {
-  @Prop()
-  private docs!: ExecutiveDocument[];
+  // @Prop()
+  // private docs!: ExecutiveDocument[];
   @Prop()
   private jobTypeId!: number;
 
   // State Computed
   private project!: Project;
   private settings!: ProjectSiteSettings;
-
+  private groupedDocs!: IndexedExecDocs;
   // State Actions
   private addDoc!: ActionMethod;
+
+  get docs() {
+    const documents = this.groupedDocs[this.jobTypeId];
+
+    if (!documents || documents.length === 0) {
+      return [];
+    }
+    const sorted = documents.sort((a, b) => {
+      if (a.docTypeSortNum && b.docTypeSortNum) {
+        if (a.docTypeSortNum > b.docTypeSortNum) {
+          return 1;
+        }
+        if (a.docTypeSortNum < b.docTypeSortNum) {
+          return -1;
+        }
+        return 0;
+      }
+      return 0;
+    });
+    return sorted;
+  }
 
   private addFile() {
     // const self = this;
     showEditExecDocDialog(
-      (doc) => {
+      doc => {
         // console.log(doc);
         // self.addDoc(doc);
       },

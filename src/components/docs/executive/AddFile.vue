@@ -8,7 +8,7 @@
         <h2></h2>
       </div>
       <div class="fields">
-        <input type="text" v-model="fileData.barCode" />
+        <input type="text" v-model="fileData.barCode" @keypress.13.prevent />
         <select name="system" id="system" v-model="fileData.jobTypeId" @change="onSystemChanged()">
           <option
             v-for="jobType in typesOfJobs"
@@ -16,8 +16,11 @@
             :key="jobType.LookupId"
           >{{ jobType.LookupValue }}</option>
         </select>
-        <a v-if="hasScan" :href="fileData.scanLink" target="_blank">Скан загружен</a>
-        <span v-else>Скан отсутствует</span>
+        <a v-if="hasScan && scanLoading === false" :href="fileData.scanLink" target="_blank">Скан загружен</a>
+        <span v-if="scanLoading === false && hasScan === false">Скан отсутствует</span>
+        <span v-if="scanLoading">
+          <img src="/_layouts/15/images/loading.gif" />&nbsp;Загружаем скан...
+        </span>
       </div>
       <div class="title">
         <h2>Название документа</h2>
@@ -26,7 +29,7 @@
         <h2>Форма</h2>
       </div>
       <div class="fields">
-        <select name="docTitle" id="docTitle" v-model="fileData.docTypeId">
+        <select name="docTitle" id="docTitle" v-model="fileData.docTypeId" @change="docTypeChanged">
           <option
             v-for="docType in execDocTypes"
             :value="docType.LookupId"
@@ -34,6 +37,8 @@
           >{{ docType.LookupValue }}</option>
         </select>
         <select id="docForm" v-model="fileData.formType">
+          <option>Не требуется</option>
+          <option>Загружено в систему РСКР</option>
           <option>Подлинник</option>
           <option>Копия</option>
           <option>На диске</option>
@@ -54,7 +59,7 @@
         <h2>Комментарий</h2>
       </div>
       <div class="fields">
-        <input type="text" v-model="fileData.comment" />
+        <input type="text" v-model="fileData.comment" @keypress.13.prevent />
       </div>
       <div class="title">
         <h2>Место хранения</h2>
@@ -145,6 +150,7 @@ export default class AddFile extends Vue {
     : getEmptyExecutiveDoc(this.project, this.jobTypeId);
 
   private address: string = "";
+  private scanLoading: boolean = false;
 
   // Computed
   get scanUrl() {
@@ -165,37 +171,42 @@ export default class AddFile extends Vue {
   get storageAddress() {
     return this.address;
   }
-
   // Watchers
   @Watch("barCode")
   private async barCodeChanged(newVal: string, oldVal: string) {
-    if (newVal.length === 13) {
-      const fileData = (await this.getScanFile(newVal)) as FileData[];
-      if (fileData.length > 0) {
-        const file = fileData[0];
-        this.fileData.scanLink = file.url;
-        this.fileData.scanSize = file.size;
-        Vue.set(this.fileData, 'scanDate', file.modified);
+    this.scanLoading = true;
+    try {
+      if (newVal.length === 13) {
+        const fileData = (await this.getScanFile(newVal)) as FileData[];
+        if (fileData.length > 0) {
+          const file = fileData[0];
+          this.fileData.scanLink = file.url;
+          this.fileData.scanSize = file.size;
+          Vue.set(this.fileData, "scanDate", file.modified);
+        } else {
+          this.fileData.scanLink = null;
+          //this.fileData.scanDate = null;
+          Vue.set(this.fileData, "scanDate", null);
+          this.fileData.scanSize = 0;
+        }
+        // Update storage address
+        await this.getFileAddress(newVal);
       } else {
         this.fileData.scanLink = null;
-        //this.fileData.scanDate = null;
-        Vue.set(this.fileData, 'scanDate', null);
+        // this.fileData.scanDate = null;
+        Vue.set(this.fileData, "scanDate", null);
         this.fileData.scanSize = 0;
+        this.address = "";
       }
-      // Update storage address
-      await this.getFileAddress(newVal);
-    } else {
-      this.fileData.scanLink = null;
-      // this.fileData.scanDate = null;
-      Vue.set(this.fileData, 'scanDate', null);
-      this.fileData.scanSize = 0;
-      this.address = "";
+    } catch (e) {
+      console.error(e);
     }
+    this.scanLoading = false;
   }
 
   // Hooks
   private beforeCreate() {
-    this.$store.commit("initializeStore");
+    // this.$store.commit("initializeStore");
   }
 
   private created() {
@@ -227,6 +238,17 @@ export default class AddFile extends Vue {
   }
 
   // Methods
+  private docTypeChanged() {
+    const docTypeId = this.fileData.docTypeId;
+    if (this.execDocTypes) {
+      const val = this.execDocTypes.find(edt => edt.LookupId === docTypeId);
+      if (val && val.required) {
+        this.fileData.required = val.required;
+      } else {
+        this.fileData.required = false;
+      }
+    }
+  }
   private async getFileAddress(barCode: string) {
     if (
       this.storageSettings &&
@@ -271,7 +293,8 @@ export default class AddFile extends Vue {
 
   private hasRemarksChecked(event: Event) {
     if (event.srcElement) {
-      const ele = event.srcElement.nextSibling as HTMLElement;
+      const rootEle = event.srcElement as HTMLElement;
+      const ele = rootEle.nextSibling as HTMLElement;
       if (ele) {
         ele.click();
       }
@@ -313,21 +336,17 @@ export default class AddFile extends Vue {
         this.siteSettings.executiveDocTypesListId,
         [jobTypeId]
       );
-      this.execDocTypes.push(
-        ...docTypes.sort((a, b) => {
-          if (a.LookupValue > b.LookupValue) {
-            return 1;
-          }
-          if (a.LookupValue < b.LookupValue) {
-            return -1;
-          }
-          return 0;
-        })
-      );
+      this.execDocTypes = docTypes;//.push(...docTypes);
       // Set default for new doc.
       if (this.fileData.id === 0 && this.execDocTypes.length > 0) {
-        this.fileData.title = this.execDocTypes[0].LookupValue;
-        this.fileData.docTypeId = this.execDocTypes[0].LookupId;
+        const edt = this.execDocTypes[0];
+        this.fileData.title = edt.LookupValue;
+        this.fileData.docTypeId = edt.LookupId;
+        if (edt.required) {
+          this.fileData.required = edt.required;
+        } else {
+          this.fileData.required = false;
+        }
       }
     }
   }

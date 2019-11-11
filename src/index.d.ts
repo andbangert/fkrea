@@ -2,6 +2,7 @@
 declare namespace fkrea {
     function ConfigureProjectCard(settings: ProjectCardSettings): void;
     function InitProjectNewForm(ctx: SPClientTemplates.RenderContext_Form, settings: ProjectCardSettings): void;
+    function InitProjectViewForm(projSiteSettings?: any, archSiteSettings?:any, storageSettings?: any): void;
     interface ProjectCardSettings {
         siteUrl: string;
         docListId: string;

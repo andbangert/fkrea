@@ -9,13 +9,13 @@ export const getters: GetterTree<RootState, RootState> = {
         if (state.project) {
             const arr = state.project.buildObject;
             if (arr && arr.length > 0) {
-                arr[0].LookupValue;
+                return arr[0].LookupValue;
             }
         }
         return '';
     },
-    getProjectBuilder: (state) => {
-    },
-    getProjectContracts: (state) => {
-    }
+    // getProjectBuilder: (state) => {
+    // },
+    // getProjectContracts: (state) => {
+    // }
 };

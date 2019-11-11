@@ -182,12 +182,12 @@ export function createFolderRecursively(
             const ctx1 = parentFolder.get_context();
             const folderNames = fUrl.split('/');
             const folderName = folderNames[0];
-            const curFolder = parentFolder.get_folders().add(folderName);
+            const curFolder = parentFolder.get_folders().add(folderName.trimEnd());
             ctx1.load(curFolder);
             ctx1.executeQueryAsync((s, a) => {
                 if (folderNames.length > 1) {
                     const subFolderUrl = folderNames.slice(1, folderNames.length).join('/');
-                    createFolderInternal(curFolder, subFolderUrl);
+                    createFolderInternal(curFolder, subFolderUrl.trimEnd());
                 }
                 resolve(curFolder);
             }, (s, a) => {
@@ -320,9 +320,8 @@ export function createOrUpdateItem(
         const formList = ((initContext.get_web()).get_lists()).getById(listId);
         const params = new SP.ListItemCreationInformation();
         let allFormValues = new Array<SP.ListItemFormUpdateValue>();
-
         initContext.add_requestSucceeded((source, eventArgs) => {
-            console.log(item.get_id());
+            // console.log(item.get_id());
             resolve(item);
         });
         initContext.add_requestFailed((source, eventArgs) => {
@@ -432,7 +431,13 @@ export function removeListItemById(siteUrl: string, listId: string, itemId: numb
 export const dateToFormString = (dateTime: Date): string => {
     // TODO: This should be reworked!!!
     const d = _spPageContextInfo.currentLanguage === 1049
-    ? format(dateTime, 'D/M/YYYY h:m A')
-    : format(dateTime, 'M/D/YYYY h:m A');
+        ? format(dateTime, 'D/M/YYYY h:m A')
+        : format(dateTime, 'M/D/YYYY h:m A');
     return d;
 };
+
+export function formatDate(dateTime: Date | string, formatString: string): string {
+    // TODO: This should be reworked!!!
+    const date = new Date(dateTime);
+    return format(date, formatString);
+}

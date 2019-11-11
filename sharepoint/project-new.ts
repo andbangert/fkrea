@@ -1,7 +1,7 @@
 /// <reference path="../src/index.d.ts" />
 
 module ProjectForms {
-    class ProjectForm {
+    class ProjectNewForm {
         private fieldsToRender = [
             'BuildObj',
             'Title',
@@ -243,7 +243,7 @@ module ProjectForms {
     }
 
     export function init() {
-        const form = new ProjectForm();
+        const form = new ProjectNewForm();
         const options: SPClientTemplates.TemplateOverridesOptions = {
             Templates: {
                 Item: (ctx) => {

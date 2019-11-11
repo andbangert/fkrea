@@ -7,6 +7,7 @@ export const FieldNames = {
     FieldContractor: 'Contractor',
     FieldContracts: 'Contracts',
     FieldTypeOfJobs: 'TypeOfJobs',
+    FieldDownloaded: 'Downloaded',
 
     FieldProject: 'Project',
     FieldScanLink: 'ScanLink',
@@ -37,6 +38,20 @@ export const FieldNames = {
     FieldExecutiveDocsReadyToArchive: 'ExecutiveDocsReadyToArchive',
     FieldExecutiveDocsReadyToArchiveDate: 'ExecutiveDocsReadyToArchiveDate',
     FieldFileSize: 'File_x0020_Size',
+    FieldSortOrder: 'SortOrder',
+    FieldNumber: 'Number',
+    FieldQueued: 'Queued',
+    FieldHasError: 'HasError',
+
+    TypeOfJobs: 'TypeOfJobs',
+    BuildObj: 'BuildObj',
+    Path: 'Path',
+    FieldProjectCardID: 'ProjectCardID',
+    FieldPartName: 'PartName',
+    Comment: 'Comment',
+    FieldBuildObjForFile: 'BuildObjForFile',
+    Modified: 'Modified',
+    FileSize: 'File_x0020_Size',
 };
 
 export namespace Fkrea {

@@ -7,14 +7,14 @@ import {
 } from '@/types';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { getters } from './getters';
+import { getrs } from './getters';
 
 const state: ExecutiveDocsState = {
     siteUrl: '/',
     docCardListId: '/',
     documents: new Array<ExecutiveDocument>(),
     // groupedDocs: {},
-    //groupedDocTypes: {},
+    // groupedDocTypes: {},
 };
 
 const store: Module<ExecutiveDocsState, RootState> = {
@@ -22,7 +22,7 @@ const store: Module<ExecutiveDocsState, RootState> = {
     state,
     actions,
     mutations,
-    getters,
+    getters: getrs,
 };
 
 export default store;
